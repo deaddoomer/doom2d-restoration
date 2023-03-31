@@ -73,10 +73,10 @@ static void *scrnh[3];
 extern int sky_type;
 
 static void chk_exit(void) {
-  static char msg[]={''^85,'®'^85,'¦'^85,' '^85,'«'^85,'ã'^85,'©'^85,'á'^85,
-    'â'^85,' '^85,' '^85,
-    '¯'^85,'¥'^85,'à'^85,'¥'^85,'ã'^85,'á'^85,'â'^85,' '^85,'­'^85,'®'^85,
-    '¢'^85,'¨'^85,'â'^85,'¥'^85,' '^85,'¨'^85,'£'^85,'à'^85,'ã'^85,0};
+  static char msg[]={'ĞŸ'^85,'Ğ¾'^85,'Ğ¶'^85,'Ğ°'^85,'Ğ»'^85,'Ñƒ'^85,'Ğ¹'^85,'Ñ'^85,
+    'Ñ‚'^85,'Ğ°'^85,' '^85,
+    'Ğ¿'^85,'Ğµ'^85,'Ñ€'^85,'Ğµ'^85,'Ñƒ'^85,'Ñ'^85,'Ñ‚'^85,'Ğ°'^85,'Ğ½'^85,'Ğ¾'^85,
+    'Ğ²'^85,'Ğ¸'^85,'Ñ‚'^85,'Ğµ'^85,' '^85,'Ğ¸'^85,'Ğ³'^85,'Ñ€'^85,'Ñƒ'^85,0};
   int i;
 
   for(i=0;msg[i];++i) msg[i]^=85;
@@ -266,7 +266,7 @@ void G_act(void) {
 	F_freemus();
 	if(g_st==GS_INTER) {
 	  F_loadmus("INTERMUS");
-	}else {F_loadmus("Š…–");if(mus_vol>0) mus_vol=128;}
+	}else {F_loadmus("ĞšĞĞĞ•Ğ¦");if(mus_vol>0) mus_vol=128;}
 	S_startmusic();
   }else if(g_exit==2) {
 	switch(g_map) {
@@ -299,9 +299,9 @@ static void pl_info(player_t *p,int y) {
   dword t;
 
   t=p->kills*10920/g_time;
-  Z_gotoxy(25,y);Z_printbf("“ˆ‹");
-  Z_gotoxy(25,y+15);Z_printbf("“ˆ‰‘’‚ ‚ Œˆ“’“");
-  Z_gotoxy(25,y+30);Z_printbf("€˜…‹ ‘…Š…’‚ %u ˆ‡ %u",p->secrets,sw_secrets);
+  Z_gotoxy(25,y);Z_printbf("Ğ£Ğ‘Ğ˜Ğ›");
+  Z_gotoxy(25,y+15);Z_printbf("Ğ£Ğ‘Ğ˜Ğ™Ğ¡Ğ¢Ğ’ Ğ’ ĞœĞ˜ĞĞ£Ğ¢Ğ£");
+  Z_gotoxy(25,y+30);Z_printbf("ĞĞĞ¨Ğ•Ğ› Ğ¡Ğ•ĞšĞ Ğ•Ğ¢ĞĞ’ %u Ğ˜Ğ— %u",p->secrets,sw_secrets);
   Z_gotoxy(255,y);Z_printbf("%u",p->kills);
   Z_gotoxy(255,y+15);Z_printbf("%u.%u",t/10,t%10);
 }
@@ -321,13 +321,13 @@ void G_draw(void) {
       break;
     case GS_INTER:
 	  V_pic(0,0,scrnh[1]);
-	  Z_gotoxy(60,20);Z_printbf("“‚…œ ‰„…");
+	  Z_gotoxy(60,20);Z_printbf("Ğ£Ğ ĞĞ’Ğ•ĞĞ¬ ĞŸĞ ĞĞ™Ğ”Ğ•Ğ");
 	  Z_calc_time(g_time,&hr,&mn,&sc);
-	  Z_gotoxy(115,40);Z_printbf("‡€ %u:%02u:%02u",hr,mn,sc);
+	  Z_gotoxy(115,40);Z_printbf("Ğ—Ğ %u:%02u:%02u",hr,mn,sc);
 	  h=60;
 	  if(_2pl) {
-		Z_gotoxy(80,h);Z_printbf("…‚›‰ ˆƒŠ");
-		Z_gotoxy(80,h+70);Z_printbf("‚’‰ ˆƒŠ");
+		Z_gotoxy(80,h);Z_printbf("ĞŸĞ•Ğ Ğ’Ğ«Ğ™ Ğ˜Ğ“Ğ ĞĞš");
+		Z_gotoxy(80,h+70);Z_printbf("Ğ’Ğ¢ĞĞ ĞĞ™ Ğ˜Ğ“Ğ ĞĞš");
 		h+=20;
 	  }
 	  pl_info(&pl1,h);
