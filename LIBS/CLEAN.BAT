@@ -1,11 +1,23 @@
-@CD .\AV
+@CD   AV
 @CALL CLEAN.BAT
-@CD ..\VGA
+@CD   ..
+
+@CD   VGA
 @CALL CLEAN.BAT
-@CD ..\SOUND
+@CD   ..
+
+@CD   SOUND
 @CALL CLEAN.BAT
-@CD ..\SNDDRV
+@CD   ..
+
+@CD   SNDDRV
 @CALL CLEAN.BAT
-@CD ..\DOS
+@CD   ..
+
+@CD   GUI
 @CALL CLEAN.BAT
-@CD ..\
+@CD   ..
+
+@CD   DOS
+@CALL CLEAN.BAT
+@CD   ..
