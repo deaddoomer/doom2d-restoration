@@ -42,7 +42,7 @@ void ERR_fatal(char *s,...) {
   va_list ap;
 
   close_all();
-  puts("\nЉђ€’€—…‘ЉЂџ Ћ€ЃЉЂ:");
+  puts("\nРљР РРўРР§Р•РЎРљРђРЇ РћРЁРР‘РљРђ:");
   va_start(ap,s);
   vprintf(s,ap);
   va_end(ap);
@@ -55,7 +55,7 @@ void ERR_quit(void) {
 
   V_done();
   if(!(p=malloc(4000)))
-    puts("‘Ї бЁЎ® §  в®, зв® ўл ЁЈа «Ё ў Doom2D!");
+    puts("РЎРїР°СЃРёР±Рѕ Р·Р° С‚Рѕ, С‡С‚Рѕ РІС‹ РёРіСЂР°Р»Рё РІ Doom2D!");
   else {
     F_loadres(F_getresid("ENDOOM"),p,0,4000);
     memcpy((void*)0xB8000,p,4000);free(p);gotoxy(1,24);

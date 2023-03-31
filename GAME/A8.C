@@ -199,7 +199,7 @@ int A8_nextframe(void) {
         p=draw2(p);
         break;
       default:
-        ERR_fatal("Плохой блок в файле A8");
+        ERR_fatal("╨Я╨╗╨╛╤Е╨╛╨╣ ╨▒╨╗╨╛╨║ ╨▓ ╤Д╨░╨╣╨╗╨╡ A8");
     }
     ++frame;
   return 1;
@@ -259,10 +259,10 @@ int A8_start(char *nm) {
   if((fh=open(s,O_BINARY|O_RDONLY))==-1) {
     if(strk) {free(strk);strk=NULL;}
     return 0;
-//    ERR_fatal("Не могу открыть файл %s",s);
+//    ERR_fatal("╨Э╨╡ ╨╝╨╛╨│╤Г ╨╛╤В╨║╤А╤Л╤В╤М ╤Д╨░╨╣╨╗ %s",s);
   }
   read(fh,&ah,sizeof(ah)-4);
-  if(ah.id!=A8_ID || ah.ver!=0) ERR_fatal("Испорченный файл A8 %s",s);
+  if(ah.id!=A8_ID || ah.ver!=0) ERR_fatal("╨Ш╤Б╨┐╨╛╤А╤З╨╡╨╜╨╜╤Л╨╣ ╤Д╨░╨╣╨╗ A8 %s",s);
   lseek(fh,0,SEEK_END);
   fsz=tell(fh)-sizeof(ah)+4;
   lseek(fh,sizeof(ah)-4,SEEK_SET);
