@@ -1,7 +1,7 @@
 /*
-  á¢„™Æ¢Î• §‡†©¢•‡† §´Ô DOS4GW
-  Ç•‡·®Ô 1.0
-  (C) Ä´•™·•© ÇÆ´Î≠·™Æ¢, 1996
+  –ó–≤—É–∫–æ–≤—ã–µ –¥—Ä–∞–π–≤–µ—Ä–∞ –¥–ª—è DOS4GW
+  –í–µ—Ä—Å–∏—è 1.0
+  (C) –ê–ª–µ–∫—Å–µ–π –í–æ–ª—ã–Ω—Å–∫–æ–≤, 1996
 */
 
 #pragma library("snddrv.lib")
@@ -10,24 +10,24 @@
 extern "C" {
 #endif
 
-// ≠Æ¨•‡† §‡†©¢•‡Æ¢
+// –Ω–æ–º–µ—Ä–∞ –¥—Ä–∞–π–≤–µ—Ä–æ–≤
 enum{
-  SDRV_NONE=0,          // ‚®Ë®≠†...
-  SDRV_ADLIB,           // Adlib: 6 °®‚
-  SDRV_COVOX,           // Covox Speech Thing: 8 °®‚
-			// snd_port = ≠Æ¨•‡ LPT(1-4)
-  SDRV_PC1,             // PC Speaker: 1 °®‚
-  SDRV_PC8,             // PC Speaker: ¢‡Æ§• ™†™ 8 °®‚ (®´® 7)
-  SDRV_SB,              // Sound Blaster: 8 °®‚, DMA
-			// snd_port = °†ßÆ¢Î© ØÆ‡‚ (Æ°ÎÁ≠Æ 0x220)
-			// snd_iqr = ≠Æ¨•‡ IRQ (Æ°ÎÁ≠Æ 7 ®´® 5)
-			// sorry, DMA ØÆ™† ‚Æ´Ï™Æ 1
-//  SDRV_SBNODMA,               // Sound Blaster: 8 °®‚, °•ß DMA (¨•§´•≠≠••)
-  SDRV_SB16,            // Sound Blaster 16/AWE32: 16 °®‚, DMA
+  SDRV_NONE=0,          // —Ç–∏—à–∏–Ω–∞...
+  SDRV_ADLIB,           // Adlib: 6 –±–∏—Ç
+  SDRV_COVOX,           // Covox Speech Thing: 8 –±–∏—Ç
+			// snd_port = –Ω–æ–º–µ—Ä LPT(1-4)
+  SDRV_PC1,             // PC Speaker: 1 –±–∏—Ç
+  SDRV_PC8,             // PC Speaker: –≤—Ä–æ–¥–µ –∫–∞–∫ 8 –±–∏—Ç (–∏–ª–∏ 7)
+  SDRV_SB,              // Sound Blaster: 8 –±–∏—Ç, DMA
+			// snd_port = –±–∞–∑–æ–≤—ã–π –ø–æ—Ä—Ç (–æ–±—ã—á–Ω–æ 0x220)
+			// snd_iqr = –Ω–æ–º–µ—Ä IRQ (–æ–±—ã—á–Ω–æ 7 –∏–ª–∏ 5)
+			// sorry, DMA –ø–æ–∫–∞ —Ç–æ–ª—å–∫–æ 1
+//  SDRV_SBNODMA,               // Sound Blaster: 8 –±–∏—Ç, –±–µ–∑ DMA (–º–µ–¥–ª–µ–Ω–Ω–µ–µ)
+  SDRV_SB16,            // Sound Blaster 16/AWE32: 16 –±–∏—Ç, DMA
   SDRV__END
 };
 
-// †§‡•·† §‡†©¢•‡Æ¢
+// –∞–¥—Ä–µ—Å–∞ –¥—Ä–∞–π–≤–µ—Ä–æ–≤
 extern void *snd_drv_tab[];
 
 #ifdef __cplusplus
