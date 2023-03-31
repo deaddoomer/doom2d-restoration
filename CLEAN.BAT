@@ -1,4 +1,4 @@
-@CD   UTILS.BAT
+@CD   UTILS
 @CALL CLEAN.BAT
 @CD   ..
 
