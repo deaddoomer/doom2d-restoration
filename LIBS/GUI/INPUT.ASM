@@ -9,7 +9,7 @@ public mouse_buttons
 
 codeseg
 
-proc I_init uses ebx es
+proc I_init uses ebx
 public I_init
   mov ax,3533h
   int 21h
