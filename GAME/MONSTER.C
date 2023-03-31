@@ -81,21 +81,6 @@ static char *sleepanim[MN_TN]={
   "","U","U","U","","T","","","","","","","","","","","","","","W"
 };
 
-#ifdef USE_LAYOUT_HACK
-extern int hit_xv,hit_yv;
-
-#define spr  mon_spr
-#define sprd mon_sprd
-#define snd  mon_snd
-extern void *spr[MN_TN][29*2],*fspr[8],*fsnd,*pauksnd,*trupsnd,*sgun[2];
-extern void *gspr[13][8];
-extern char sprd[MN_TN][29*2];
-extern void *snd[MN_TN][5],*impsitsnd[2],*impdthsnd[2],*firsnd,*slopsnd,*gsnd[4];
-extern void *swgsnd,*pchsnd,*pl_spr[2],*telesnd;
-extern void *positsnd[3],*podthsnd[3];
-extern mn_t mn[MAXMN];
-extern int mnum,gsndt;
-#else
 int hit_xv,hit_yv;
 
 static void *spr[MN_TN][29*2],*fspr[8],*fsnd,*pauksnd,*trupsnd,*sgun[2];
@@ -106,7 +91,6 @@ static void *swgsnd,*pchsnd,*pl_spr[2],*telesnd;
 static void *positsnd[3],*podthsnd[3];
 static mn_t mn[MAXMN];
 static int mnum,gsndt;
-#endif
 static mnsz_t mnsz[MN_TN+1]={
 //rad  ht  life  pain rv jv  slop min_pn
     0,  0,    0,    0, 0, 0,    0,    0,	// none

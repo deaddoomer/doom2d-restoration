@@ -64,23 +64,6 @@ extern byte cheat;
 byte g_bot=0,_2pl=0,g_dm=0,g_st=GS_TITLE,g_exit=0,g_map=1,_warp=0,g_music[8]="MENU";
 byte _net=0;
 int g_sttm=1092;
-#ifdef USE_LAYOUT_HACK
-extern dword g_time;
-extern int dm_pnum,dm_pl1p,dm_pl2p;
-extern pos_t dm_pos[100];
-
-extern void *telepsnd;
-extern void *scrnh[3];
-extern void *cd_scr;
-
-extern int sky_type;
-extern void *ltn[2][2];
-extern int lt_time,lt_type,lt_side,lt_ypos,lt_force;
-extern void *ltnsnd[2];
-
-int g_trans=0; // non extern
-extern int g_transt;
-#else
 dword g_time;
 int dm_pnum,dm_pl1p,dm_pl2p;
 pos_t dm_pos[100];
@@ -95,7 +78,6 @@ int lt_time,lt_type,lt_side,lt_ypos,lt_force;
 void *ltnsnd[2];
 
 int g_trans=0,g_transt;
-#endif
 
 static void set_trans(int st) {
   switch(g_st) {

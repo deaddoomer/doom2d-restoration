@@ -46,14 +46,8 @@ byte pcolortab[PCOLORN]={
 };
 int p1color=5,p2color=4;
 
-#ifdef USE_LAYOUT_HACK
-extern byte ibuf[24];
-static byte input=0; // not extern
-extern int icur;
-#else
 static byte ibuf[24],input=0;
 static int icur;
-#endif
 
 enum{MENU,MSG};
 enum{CANCEL,NEWGAME,LOADGAME,SAVEGAME,OPTIONS,QUITGAME,QUIT,ENDGAME,ENDGM,
@@ -61,11 +55,7 @@ enum{CANCEL,NEWGAME,LOADGAME,SAVEGAME,OPTIONS,QUITGAME,QUIT,ENDGAME,ENDGM,
   SVOLM,SVOLP,MVOLM,MVOLP,GAMMAM,GAMMAP,PL1CM,PL1CP,PL2CM,PL2CP};
 
 #ifndef DEMO
-#ifdef USE_LAYOUT_HACK
-extern int qsnd[QSND_NUM];
-#else
 static int qsnd[QSND_NUM];
-#endif
 #endif
 
 static char *main_txt[]={
@@ -143,17 +133,10 @@ static menu_t *mnu=NULL;
 static byte gm_redraw=0;
 static int gm_tm=0;
 short lastkey=0;
-#ifdef USE_LAYOUT_HACK
-extern void *csnd1,*csnd2,*msnd1,*msnd2,*msnd3,*msnd4,*msnd5,*msnd6;
-static int movsndt=0; // not extern
-extern vgaimg *msklh[2],*mbarl,*mbarm,*mbarr,*mbaro,*mslotl,*mslotm,*mslotr;
-extern byte cbuf[32];
-#else
 static void *csnd1,*csnd2,*msnd1,*msnd2,*msnd3,*msnd4,*msnd5,*msnd6;
 static int movsndt=0;
 static vgaimg *msklh[2],*mbarl,*mbarm,*mbarr,*mbaro,*mslotl,*mslotm,*mslotr;
 static byte cbuf[32];
-#endif
 
 static snd_t *voc=NULL;
 static int voc_ch=0;

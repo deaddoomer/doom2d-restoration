@@ -45,17 +45,6 @@ typedef void fire_f(int,int,int,int,int);
 
 int Z_getacid(int x,int y,int r,int h);
 
-#ifdef USE_LAYOUT_HACK
-player_t pl1;
-extern player_t pl2;
-extern int aitime;
-extern void *aisnd[3];
-extern void *pdsnd[5];
-
-extern void *spr[27*2],*snd[11];
-extern char sprd[27*2];
-extern void *wpn[11][6];
-#else
 player_t pl1,pl2;
 static int aitime;
 static void *aisnd[3];
@@ -64,7 +53,6 @@ static void *pdsnd[5];
 static void *spr[27*2],*snd[11];
 static char sprd[27*2];
 static void *wpn[11][6];
-#endif
 static byte goanim[]="BDACDA",
   dieanim[]="HHHHIIIIJJJJKKKKLLLLMMMM",
   slopanim[]="OOPPQQRRSSTTUUVVWW";
@@ -303,13 +291,8 @@ static obj_t *PL_itemobj(player_t *p) {
 }
 
 static void PL_blowup(player_t *p) {
-#define head a[0]
-#define body a[1]
-#define legs a[2]
-#define hands a[3]
-#define guts a[4]
   static obj_t o;
-  static char a[5];
+  static char head,body,legs,hands,guts;
   int x,y;
 
   o.x=p->o.x;o.y=p->o.y-(p->o.h/2);
@@ -346,11 +329,6 @@ static void PL_blowup(player_t *p) {
       MN_spawn_deadpl(&o,p->color,7);
     }
   }
-#undef head
-#undef body
-#undef legs
-#undef hands
-#undef guts
 }
 
 void IT_spawnobj(obj_t *o,int t);

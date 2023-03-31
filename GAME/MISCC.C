@@ -30,12 +30,7 @@ void V_manspr2(int,int,vgaimg *,char);
 
 extern void *walp[256];
 
-#ifdef USE_LAYOUT_HACK
-#define keys miscc_keys
-extern void *sth[22],*bfh[160-'!'],*sfh[160-'!'],*bulsnd[2],*stone[2],*keys[3];
-#else
 static void *sth[22],*bfh[160-'!'],*sfh[160-'!'],*bulsnd[2],*stone[2],*keys[3];
-#endif
 static int prx=0,pry=0;
 
 int Z_sign(int a) {
