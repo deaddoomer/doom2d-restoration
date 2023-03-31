@@ -66,7 +66,7 @@ char f_drive[_MAX_DRIVE],f_dir[_MAX_DIR],f_name[_MAX_FNAME],f_ext[_MAX_EXT],
   f_path[_MAX_PATH];
 
 void F_startup(void) {
-  logo("F_startup: ≠†·‚‡Æ©™† ‰†©´Æ¢Æ© ·®·‚•¨Î\n");
+  logo("F_startup: –Ω–∞—Å—Ç—Ä–æ–π–∫–∞ —Ñ–∞–π–ª–æ–≤–æ–π —Å–∏—Å—Ç–µ–º—ã\n");
   memset(wads,0,sizeof(wads));
 }
 
@@ -126,10 +126,10 @@ void F_loadgame(int n) {
 
 void F_set_snddrv(void) {
   snd_card=(snd_card>=SDRV__END)?0:snd_card;
-  logo("F_set_snddrv: ß¢„™Æ¢†Ô ™†‡‚† #%d\n",snd_card);
+  logo("F_set_snddrv: –∑–≤—É–∫–æ–≤–∞—è –∫–∞—Ä—Ç–∞ #%d\n",snd_card);
   snd_drv=snd_drv_tab[snd_card];
   logo("  %s ",S_getinfo());
-  if(snd_card) logo("(%dÉÊ)\n",(dword)sfreq);
+  if(snd_card) logo("(%d–ì—Ü)\n",(dword)sfreq);
     else logo("\n");
 }
 
@@ -139,7 +139,7 @@ void F_addwad(char *fn) {
   for(i=0;i<MAX_WADS;++i) if(wads[i][0]==0) {
     strcpy(wads[i],fn);return;
   }
-  ERR_failinit("ç• ¨Æ£„ §Æ°†¢®‚Ï WAD %s",fn);
+  ERR_failinit("–ù–µ –º–æ–≥—É –¥–æ–±–∞–≤–∏—Ç—å WAD %s",fn);
 }
 
 // build wad directory
@@ -149,32 +149,32 @@ void F_initwads(void) {
   long n,o;
   wad_t w;
 
-  logo("F_initwads: ØÆ§™´ÓÁ•≠®• WAD-‰†©´Æ¢\n");
+  logo("F_initwads: –ø–æ–¥–∫–ª—é—á–µ–Ω–∏–µ WAD-—Ñ–∞–π–ª–æ–≤\n");
   for(i=0;i<MAX_WAD;++i) wad[i].n[0]=0;
-  logo("  ØÆ§™´ÓÁ†•‚·Ô %s\n",wads[0]);
+  logo("  –ø–æ–¥–∫–ª—é—á–∞–µ—Ç—Å—è %s\n",wads[0]);
   if((wadh[0]=h=open(wads[0],O_RDWR|O_BINARY))==-1)
-	ERR_failinit("ç• ¨Æ£„ Æ‚™‡Î‚Ï ‰†©´: %s",sys_errlist[errno]);
+	ERR_failinit("–ù–µ –º–æ–≥—É –æ—Ç–∫—Ä—ã—Ç—å —Ñ–∞–π–ª: %s",sys_errlist[errno]);
   *s=0;read(h,s,4);
   if(strncmp(s,"IWAD",4)!=0 && strncmp(s,"PWAD",4)!=0)
-	ERR_failinit("ç•‚ ØÆ§Ø®·® IWAD ®´® PWAD");
+	ERR_failinit("–ù–µ—Ç –ø–æ–¥–ø–∏—Å–∏ IWAD –∏–ª–∏ PWAD");
   read(h,&n,4);read(h,&o,4);lseek(h,o,SEEK_SET);
   for(j=0,p=0;j<n;++j) {
 	read(h,&w,16);
-	if(p>=MAX_WAD) ERR_failinit("ë´®Ë™Æ¨ ¨≠Æ£Æ Ì´•¨•≠‚Æ¢ WAD'†");
+	if(p>=MAX_WAD) ERR_failinit("–°–ª–∏—à–∫–æ–º –º–Ω–æ–≥–æ —ç–ª–µ–º–µ–Ω—Ç–æ–≤ WAD'–∞");
 	memcpy(wad[p].n,w.n,8);
 	wad[p].o=w.o;wad[p].l=w.l;wad[p].f=0;
 	++p;
   }
   for(i=1;i<MAX_WADS;++i) if(wads[i][0]!=0) {
-	logo("  ØÆ§™´ÓÁ†•‚·Ô %s\n",wads[i]);
+	logo("  –ø–æ–¥–∫–ª—é—á–∞–µ—Ç—Å—è %s\n",wads[i]);
 	if((wadh[i]=h=open(wads[i],O_RDONLY|O_BINARY))==-1)
-	  ERR_failinit("ç• ¨Æ£„ Æ‚™‡Î‚Ï ‰†©´: %s",sys_errlist[errno]);
+	  ERR_failinit("–ù–µ –º–æ–≥—É –æ—Ç–∫—Ä—ã—Ç—å —Ñ–∞–π–ª: %s",sys_errlist[errno]);
 	_splitpath(wads[i],f_drive,f_dir,f_name,f_ext);
 	if(stricmp(f_ext,".lmp")==0) {
 	  for(k=0;k<MAX_WAD;++k) if(strnicmp(wad[k].n,f_name,8)==0)
 		{wad[k].o=0L;wad[k].l=filelength(h);wad[k].f=i;break;}
 	  if(k>=MAX_WAD) {
-		if(p>=MAX_WAD) ERR_failinit("ë´®Ë™Æ¨ ¨≠Æ£Æ Ì´•¨•≠‚Æ¢ WAD'†");
+		if(p>=MAX_WAD) ERR_failinit("–°–ª–∏—à–∫–æ–º –º–Ω–æ–≥–æ —ç–ª–µ–º–µ–Ω—Ç–æ–≤ WAD'–∞");
 		memset(wad[p].n,0,8);
 		strncpy(wad[p].n,f_name,8);
 		wad[p].o=0L;wad[p].l=filelength(h);wad[p].f=i;
@@ -184,14 +184,14 @@ void F_initwads(void) {
 	}
 	*s=0;read(h,s,4);
 	if(strncmp(s,"IWAD",4)!=0 && strncmp(s,"PWAD",4)!=0)
-	  ERR_failinit("ç•‚ ØÆ§Ø®·® IWAD ®´® PWAD");
+	  ERR_failinit("–ù–µ—Ç –ø–æ–¥–ø–∏—Å–∏ IWAD –∏–ª–∏ PWAD");
     read(h,&n,4);read(h,&o,4);lseek(h,o,SEEK_SET);
     for(j=0;j<n;++j) {
 	  read(h,&w,16);
 	  for(k=0;k<MAX_WAD;++k) if(strnicmp(wad[k].n,w.n,8)==0)
 		{wad[k].o=w.o;wad[k].l=w.l;wad[k].f=i;break;}
 	  if(k>=MAX_WAD) {
-		if(p>=MAX_WAD) ERR_failinit("ë´®Ë™Æ¨ ¨≠Æ£Æ Ì´•¨•≠‚Æ¢ WAD'†");
+		if(p>=MAX_WAD) ERR_failinit("–°–ª–∏—à–∫–æ–º –º–Ω–æ–≥–æ —ç–ª–µ–º–µ–Ω—Ç–æ–≤ WAD'–∞");
 		memcpy(wad[p].n,w.n,8);
 		wad[p].o=w.o;wad[p].l=w.l;wad[p].f=i;
 		++p;
@@ -252,9 +252,9 @@ void F_loadres(int r,void *p,dword o,dword l) {
 
   oo=tell(fh=wadh[wad[r].f]);
   if(lseek(fh,wad[r].o+o,SEEK_SET)==-1L)
-    ERR_fatal("éË®°™† Ø‡® Á‚•≠®® ‰†©´†");
+    ERR_fatal("–û—à–∏–±–∫–∞ –ø—Ä–∏ —á—Ç–µ–Ω–∏–∏ —Ñ–∞–π–ª–∞");
   if((dword)read(fh,p,l)!=l)
-    ERR_fatal("éË®°™† Ø‡® ß†£‡„ß™• ‡•·„‡·† %.8s",wad[r].n);
+    ERR_fatal("–û—à–∏–±–∫–∞ –ø—Ä–∏ –∑–∞–≥—Ä—É–∑–∫–µ —Ä–µ—Å—É—Ä—Å–∞ %.8s",wad[r].n);
   lseek(fh,oo,SEEK_SET);
 }
 
@@ -263,7 +263,7 @@ void F_saveres(int r,void *p,dword o,dword l) {
 
   oo=tell(fh=wadh[wad[r].f]);
   if(lseek(fh,wad[r].o+o,SEEK_SET)==-1L)
-    ERR_fatal("éË®°™† Ø‡® Á‚•≠®® ‰†©´†");
+    ERR_fatal("–û—à–∏–±–∫–∞ –ø—Ä–∏ —á—Ç–µ–Ω–∏–∏ —Ñ–∞–π–ª–∞");
   write(fh,p,l);
   lseek(fh,oo,SEEK_SET);
 }
@@ -273,7 +273,7 @@ int F_getresid(char *n) {
   int i;
 
   for(i=0;i<wad_num;++i) if(strnicmp(wad[i].n,n,8)==0) return i;
-  ERR_fatal("F_getresid: ‡•·„‡· %.8s ≠• ≠†©§•≠",n);
+  ERR_fatal("F_getresid: —Ä–µ—Å—É—Ä—Å %.8s –Ω–µ –Ω–∞–π–¥–µ–Ω",n);
   return -1;
 }
 
@@ -304,7 +304,7 @@ int F_getsprid(char n[4],int s,int d) {
       if(a==d) return i;
       if(b==d) return(i|0x8000);
     }
-  ERR_fatal("F_getsprid: ®ßÆ°‡†¶•≠®• %.4s%c%c ≠• ≠†©§•≠Æ",n,(byte)s,(byte)d);
+  ERR_fatal("F_getsprid: –∏–∑–æ–±—Ä–∞–∂–µ–Ω–∏–µ %.4s%c%c –Ω–µ –Ω–∞–π–¥–µ–Ω–æ",n,(byte)s,(byte)d);
   return -1;
 }
 
@@ -364,7 +364,7 @@ void F_loadmap(char n[8]) {
   lseek(h=wadh[wad[r].f],wad[r].o,SEEK_SET);
   read(h,&hdr,sizeof(hdr));
   if(memcmp(hdr.id,"Doom2D\x1A",8)!=0)
-	ERR_fatal("%.8s ≠• Ô¢´Ô•‚·Ô „‡Æ¢≠•¨",n);
+	ERR_fatal("%.8s –Ω–µ —è–≤–ª—è–µ—Ç—Å—è —É—Ä–æ–≤–Ω–µ–º",n);
   for(;;) {
 	read(h,&blk,sizeof(blk));
 	if(blk.t==MB_END) break;
@@ -375,7 +375,7 @@ void F_loadmap(char n[8]) {
 	if(!W_load(h))
 	if(!IT_load(h))
 	if(!SW_load(h))
-	  ERR_fatal("ç•®ß¢•·‚≠Î© °´Æ™ %d(%d) ¢ „‡Æ¢≠• %.8s",blk.t,blk.st,n);
+	  ERR_fatal("–ù–µ–∏–∑–≤–µ—Å—Ç–Ω—ã–π –±–ª–æ–∫ %d(%d) –≤ —É—Ä–æ–≤–Ω–µ %.8s",blk.t,blk.st,n);
 	lseek(h,o,SEEK_SET);
   }
 }

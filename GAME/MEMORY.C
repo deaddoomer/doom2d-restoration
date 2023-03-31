@@ -20,10 +20,10 @@ static short resl[MAX_WAD];
 
 void M_startup(void) {
   if(m_active) return;
-  logo("M_startup: ≠†·‚‡Æ©™† Ø†¨Ô‚®\n");
+  logo("M_startup: –Ω–∞—Å—Ç—Ä–æ–π–∫–∞ –ø–∞–º—è—Ç–∏\n");
   memset(resp,0,sizeof(resp));
   memset(resl,0,sizeof(resl));
-  logo("  ·¢Æ°Æ§≠Æ DPMI-Ø†¨Ô‚®: %uK\n",dpmi_memavl()>>10);
+  logo("  —Å–≤–æ–±–æ–¥–Ω–æ DPMI-–ø–∞–º—è—Ç–∏: %uK\n",dpmi_memavl()>>10);
   m_active=TRUE;
 }
 
@@ -47,7 +47,7 @@ static void allocres(int h) {
 
   if(h>d_start && h<d_end) s=1; else s=0;
   if(!(p=malloc(wad[h].l+4+s*8)))
-    ERR_fatal("M_lock: ≠• Â¢†‚†•‚ Ø†¨Ô‚®");
+    ERR_fatal("M_lock: –Ω–µ —Ö–≤–∞—Ç–∞–µ—Ç –ø–∞–º—è—Ç–∏");
   *p=h;
   ++p;
   resp[h]=p;
@@ -64,7 +64,7 @@ static void allocres(int h) {
 void *M_lock(int h) {
   if(h==-1 || h==0xFFFF) return NULL;
   h&=-1-0x8000;
-  if(h>=MAX_WAD) ERR_fatal("M_lock: ·‚‡†≠≠Î© ≠Æ¨•‡ ‡•·„‡·†");
+  if(h>=MAX_WAD) ERR_fatal("M_lock: —Å—Ç—Ä–∞–Ω–Ω—ã–π –Ω–æ–º–µ—Ä —Ä–µ—Å—É—Ä—Å–∞");
   if(!resl[h]) if(!resp[h]) allocres(h);
   ++resl[h];
   return resp[h];
@@ -75,7 +75,7 @@ void M_unlock(void *p) {
 
   if(!p) return;
   h=((int*)p)[-1];
-  if(h>=MAX_WAD) ERR_fatal("M_unlock: ·‚‡†≠≠Î© ≠Æ¨•‡ ‡•·„‡·†");
+  if(h>=MAX_WAD) ERR_fatal("M_unlock: —Å—Ç—Ä–∞–Ω–Ω—ã–π –Ω–æ–º–µ—Ä —Ä–µ—Å—É—Ä—Å–∞");
   if(!resl[h]) return;
   --resl[h];
 }

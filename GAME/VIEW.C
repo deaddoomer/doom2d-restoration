@@ -231,7 +231,7 @@ int W_load(int h) {
 	    case 0: read(h,p,FLDW*FLDH);break;
 	    case 1:
 	      if(!(buf=malloc(blk.sz)))
-	        ERR_fatal("�� 墠⠥� �����");
+	        ERR_fatal("Не хватает памяти");
 	      read(h,buf,blk.sz);
 	      unpack(buf,blk.sz,p);free(buf);break;
 	    default: return 0;

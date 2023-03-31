@@ -1,7 +1,7 @@
 // Globals
 
 #ifndef __386__
-#error А как же DOS4GW?
+#error ╨Р ╨║╨░╨║ ╨╢╨╡ DOS4GW?
 #endif
 
 #ifndef NULL

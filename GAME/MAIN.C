@@ -82,9 +82,9 @@ void logo(const char *s,...) {
   x=wherex();y=wherey();
   gotoxy(1,1);putcn(' ',0x4F,80);
 #ifdef DEMO
-  gotoxy(25,1);cputstr("éØ•‡†Ê®Ô \"ë¨Ô‚™†\" V1.35 *demo*");
+  gotoxy(25,1);cputstr("–û–ø–µ—Ä–∞—Ü–∏—è \"–°–º—è—Ç–∫–∞\" V1.35 *demo*");
 #else
-  gotoxy(25,1);cputstr("éØ•‡†Ê®Ô \"ë¨Ô‚™†\"  ¢•‡·®Ô 1.35");
+  gotoxy(25,1);cputstr("–û–ø–µ—Ä–∞—Ü–∏—è \"–°–º—è—Ç–∫–∞\"  –≤–µ—Ä—Å–∏—è 1.35");
 #endif
   gotoxy(x,y);
 }
@@ -158,8 +158,8 @@ int main() {
   F_initwads();
   F_set_snddrv();
   if(mem_chk_sz) {
-    logo("** ß†Â†ØÎ¢†•‚·Ô %dK Ø†¨Ô‚®...",mem_chk_sz);
-    logo("%s\n",(malloc(mem_chk_sz<<10))?"OK":"éòàÅäÄ");
+    logo("** –∑–∞—Ö–∞–ø—ã–≤–∞–µ—Ç—Å—è %dK –ø–∞–º—è—Ç–∏...",mem_chk_sz);
+    logo("%s\n",(malloc(mem_chk_sz<<10))?"OK":"–û–®–ò–ë–ö–ê");
   }
   M_startup();
   F_allocres();
@@ -189,21 +189,21 @@ int main() {
 */
 //logo("*******************************************************************\n");
 //logo("**                                                               **\n");
-//logo("**                          DEMO-ÇÖêëàü                          **\n");
+//logo("**                          DEMO-–í–ï–†–°–ò–Ø                          **\n");
 //logo("**                                                               **\n");
-//logo("**                     ÇêÖåü àÉêõ éÉêÄçàóÖçé                     **\n");
+//logo("**                     –í–†–ï–ú–Ø –ò–ì–†–´ –û–ì–†–ê–ù–ò–ß–ï–ù–û                     **\n");
 //logo("**                                                               **\n");
 //logo("*******************************************************************\n");
   G_init();
-  logo("  ·¢Æ°Æ§≠Æ DPMI-Ø†¨Ô‚®: %uK\n",dpmi_memavl()>>10);
-  logo("K_init: ≠†·‚‡Æ©™† ™´†¢®†‚„‡Î\n");
+  logo("  —Å–≤–æ–±–æ–¥–Ω–æ DPMI-–ø–∞–º—è—Ç–∏: %uK\n",dpmi_memavl()>>10);
+  logo("K_init: –Ω–∞—Å—Ç—Ä–æ–π–∫–∞ –∫–ª–∞–≤–∏–∞—Ç—É—Ä—ã\n");
   K_slow();K_init();
-  logo("T_init: ≠†·‚‡Æ©™† ‚†©¨•‡†\n");
+  logo("T_init: –Ω–∞—Å—Ç—Ä–æ–π–∫–∞ —Ç–∞–π–º–µ—Ä–∞\n");
   T_init();
-  logo("S_init: ≠†·‚‡Æ©™† ß¢„™†\n");
+  logo("S_init: –Ω–∞—Å—Ç—Ä–æ–π–∫–∞ –∑–≤—É–∫–∞\n");
   S_init();
-  logo("V_init: ≠†·‚‡Æ©™† ¢®§•Æ\n");
-  if(V_init()!=0) ERR_failinit("ç• ¨Æ£„ „·‚†≠Æ¢®‚Ï ¢®§•Æ‡•¶®¨ VGA");
+  logo("V_init: –Ω–∞—Å—Ç—Ä–æ–π–∫–∞ –≤–∏–¥–µ–æ\n");
+  if(V_init()!=0) ERR_failinit("–ù–µ –º–æ–≥—É —É—Å—Ç–∞–Ω–æ–≤–∏—Ç—å –≤–∏–¥–µ–æ—Ä–µ–∂–∏–º VGA");
   setgamma(gamma);
   V_setscr(scrbuf);
   harderr_inst(harderr_handler);

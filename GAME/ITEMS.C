@@ -110,12 +110,12 @@ int IT_load(int h) {
 	  }m=i;
 	  for(i=0,j=-1;i<m;++i) if(it[i].t==TH_PLR1) {j=i;it[i].t=0;}
 	  if(!g_dm) {
-		if(j==-1) ERR_fatal("à¥¤¬¥â ¨£à®ª_1 ­¥ ­ ©¤¥­");
+		if(j==-1) ERR_fatal("ÐŸÑ€ÐµÐ´Ð¼ÐµÑ‚ Ð¸Ð³Ñ€Ð¾Ðº_1 Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½");
 		dm_pos[0].x=it[j].o.x;dm_pos[0].y=it[j].o.y;dm_pos[0].d=it[j].s&THF_DIR;
 	  }
 	  for(i=0,j=-1;i<m;++i) if(it[i].t==TH_PLR2) {j=i;it[i].t=0;}
 	  if(!g_dm && _2pl) {
-		if(j==-1) ERR_fatal("à¥¤¬¥â ¨£à®ª_2 ­¥ ­ ©¤¥­");
+		if(j==-1) ERR_fatal("ÐŸÑ€ÐµÐ´Ð¼ÐµÑ‚ Ð¸Ð³Ñ€Ð¾Ðº_2 Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½");
 		dm_pos[1].x=it[j].o.x;dm_pos[1].y=it[j].o.y;dm_pos[1].d=it[j].s&THF_DIR;
 	  }
 	  for(i=0,j=0;i<m;++i) if(it[i].t==TH_DMSTART) {
@@ -123,7 +123,7 @@ int IT_load(int h) {
 		  {dm_pos[j].x=it[i].o.x;dm_pos[j].y=it[i].o.y;dm_pos[j].d=it[i].s&THF_DIR;}
 		it[i].t=0;++j;
 	  }
-	  if(g_dm && j<2) ERR_fatal("Œ¥­ìè¥ 2-ãå â®ç¥ª DM");
+	  if(g_dm && j<2) ERR_fatal("ÐœÐµÐ½ÑŒÑˆÐµ 2-ÑƒÑ… Ñ‚Ð¾Ñ‡ÐµÐº DM");
 	  if(g_dm) {
 	    dm_pnum=j;
 	    dm_pl1p=random(dm_pnum);

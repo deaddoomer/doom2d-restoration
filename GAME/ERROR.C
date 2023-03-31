@@ -42,7 +42,7 @@ void ERR_fatal(char *s,...) {
   va_list ap;
 
   close_all();
-  puts("\nКРИТИЧЕСКАЯ ОШИБКА:");
+  puts("\n╨Ъ╨а╨Ш╨в╨Ш╨з╨Х╨б╨Ъ╨Р╨п ╨Ю╨и╨Ш╨С╨Ъ╨Р:");
   va_start(ap,s);
   vprintf(s,ap);
   va_end(ap);
@@ -55,7 +55,7 @@ void ERR_quit(void) {
 
   V_done();
   if(!(p=malloc(4000)))
-    puts("Спасибо за то, что вы играли в Операцию \"Смятка\"!");
+    puts("╨б╨┐╨░╤Б╨╕╨▒╨╛ ╨╖╨░ ╤В╨╛, ╤З╤В╨╛ ╨▓╤Л ╨╕╨│╤А╨░╨╗╨╕ ╨▓ ╨Ю╨┐╨╡╤А╨░╤Ж╨╕╤О \"╨б╨╝╤П╤В╨║╨░\"!");
   else {
     F_loadres(F_getresid("ENDOOM"),p,0,4000);
     memcpy((void*)0xB8000,p,4000);free(p);gotoxy(1,24);

@@ -84,7 +84,7 @@ void CFG_args(void) {
   dword n;
   char *s;
 
-  logo("CFG_args: Ø‡Æ¢•‡™† ™Æ¨†≠§≠Æ© ·‚‡Æ™®\n");
+  logo("CFG_args: –ø—Ä–æ–≤–µ—Ä–∫–∞ –∫–æ–º–∞–Ω–¥–Ω–æ–π —Å—Ç—Ä–æ–∫–∏\n");
   for(s=strtok(getcmd(buf)," \r\n\t");s;s=strtok(NULL," \r\n\t")) {
 next:
     if(*s=='/' || *s=='-') ++s;
@@ -119,13 +119,13 @@ next:
 	  for(s=strtok(NULL," \r\n\t");s;s=strtok(NULL," \r\n\t")) {
 		if(*s=='/' || *s=='-') goto next;
 #ifdef DEMO
-		logo("  %s çÖ ØÆ§™´ÓÁ•≠!\n",s);
+		logo("  %s –ù–ï –ø–æ–¥–∫–ª—é—á–µ–Ω!\n",s);
 #else
 		F_addwad(s);
 #endif
 	  }break;
 	default:
-	  ERR_failinit("!!! ç•®ß¢•·‚≠Î© ‚®Ø ¢ cfg !!!");
+	  ERR_failinit("!!! –ù–µ–∏–∑–≤–µ—Å—Ç–Ω—ã–π —Ç–∏–ø –≤ cfg !!!");
 	  }
 	  cfg[j].o=1;break;
     }
@@ -138,7 +138,7 @@ void CFG_load(void) {
   char s[128];
   char *p1,*p2;
 
-  logo("CFG_load: ß†£‡„ß™† ™Æ≠‰®£„‡†Ê®® ®ß %s\n",cfg_file);
+  logo("CFG_load: –∑–∞–≥—Ä—É–∑–∫–∞ –∫–æ–Ω—Ñ–∏–≥—É—Ä–∞—Ü–∏–∏ –∏–∑ %s\n",cfg_file);
   if((h=open(cfg_file,O_RDONLY|O_BINARY))==-1) {
     perror("Cannot open file");return;
   }
@@ -174,7 +174,7 @@ void CFG_load(void) {
 	case FILES:
 	  break;
 	default:
-	  ERR_failinit("!!! ç•®ß¢•·‚≠Î© ‚®Ø ¢ cfg !!!");
+	  ERR_failinit("!!! –ù–µ–∏–∑–≤–µ—Å—Ç–Ω—ã–π —Ç–∏–ø –≤ cfg !!!");
 	  }
 	  break;
     }
