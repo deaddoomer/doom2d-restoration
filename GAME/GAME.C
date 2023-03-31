@@ -56,19 +56,11 @@ extern int sky_type;
 byte _2pl=0,g_dm=0,g_st=GS_TITLE,g_exit=0,g_map=1,_warp=0,g_music[8]="";
 int g_sttm=1092;
 
-#ifdef USE_LAYOUT_HACK
-extern dword g_time;
-extern int dm_pnum,dm_pl1p,dm_pl2p;
-extern pos_t dm_pos[100];
-extern void *telepsnd,*endanim1,*endanim2;
-extern void *scrnh[3];
-#else
 dword g_time;
 int dm_pnum,dm_pl1p,dm_pl2p;
 pos_t dm_pos[100];
 static void *telepsnd,*endanim1,*endanim2;
 static void *scrnh[3];
-#endif
 
 extern int sky_type;
 

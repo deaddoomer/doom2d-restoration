@@ -25,17 +25,10 @@ typedef struct{
   byte n,i,v,d;
 }dmv;
 
-#ifdef USE_LAYOUT_HACK
-extern byte seq[255],seqn;
-extern dmv *pat=NULL;
-extern unsigned *patp;
-extern void **dmi;
-#else
 byte seq[255],seqn;
 dmv *pat=NULL;
 unsigned *patp;
 void **dmi;
-#endif
 
 static int inum=0;
 
@@ -59,15 +52,6 @@ void PL_loadgame(int);
 void SW_loadgame(int);
 void WP_loadgame(int);
 
-#ifdef USE_LAYOUT_HACK
-extern byte savname[7][24],savok[7];
-extern int d_start,d_end,m_start,m_end,s_start,s_end,wad_num;
-extern mwad_t wad[MAX_WAD];
-extern char wads[MAX_WADS][_MAX_PATH];
-extern int wadh[MAX_WADS];
-extern char f_drive[_MAX_DRIVE],f_dir[_MAX_DIR];
-extern char f_name[_MAX_FNAME],f_ext[_MAX_EXT],f_path[_MAX_PATH];
-#else
 byte savname[7][24],savok[7];
 
 int d_start,d_end,m_start,m_end,s_start,s_end,wad_num;
@@ -78,7 +62,6 @@ static int wadh[MAX_WADS];
 
 char f_drive[_MAX_DRIVE],f_dir[_MAX_DIR],f_name[_MAX_FNAME],f_ext[_MAX_EXT],
   f_path[_MAX_PATH];
-#endif
 
 void F_startup(void) {
   logo("F_startup: setting up file system\n");
@@ -326,20 +309,6 @@ int F_getreslen(int r) {
 }
 
 // reads bytes from file until CR
-#ifdef USE_LAYOUT_HACK
-extern char readstr_c;
-void F_readstr(int h,char *s,int m) {
-  int i;
-
-  for(i=0;;) {
-    readstr_c=13;
-    read(h,&readstr_c,1);
-    if(readstr_c==13) break;
-    if(i<m) s[i++]=readstr_c;
-  }
-  s[i]=0;
-}
-#else
 void F_readstr(int h,char *s,int m) {
   int i;
   static char c;
@@ -352,23 +321,8 @@ void F_readstr(int h,char *s,int m) {
   }
   s[i]=0;
 }
-#endif
 
 // reads bytes from file until NUL
-#ifdef USE_LAYOUT_HACK
-extern char readstrz_c;
-void F_readstrz(int h,char *s,int m) {
-  int i;
-
-  for(i=0;;) {
-    readstrz_c=0;
-    read(h,&readstrz_c,1);
-    if(readstrz_c==0) break;
-    if(i<m) s[i++]=readstrz_c;
-  }
-  s[i]=0;
-}
-#else
 void F_readstrz(int h,char *s,int m) {
   int i;
   static char c;
@@ -381,13 +335,8 @@ void F_readstrz(int h,char *s,int m) {
   }
   s[i]=0;
 }
-#endif
 
-#ifdef USE_LAYOUT_HACK
-extern map_block_t blk;
-#else
 map_block_t blk;
-#endif
 
 void F_loadmap(char n[8]) {
   int r,h;

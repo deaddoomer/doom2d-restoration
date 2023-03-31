@@ -123,7 +123,7 @@ word equp(void);
 #pragma aux equp= "int 0x11" value [ax]
 
 int main() {
-  int i;
+  int i,flg;
 
   pl1.ku=0x48;pl1.kd=0x50;pl1.kl=0x4B;pl1.kr=0x4D;pl1.kf=0xB8;pl1.kj=0x9D;
   pl1.kwl=0x47;pl1.kwr=0x49;pl1.kp=0x36;
@@ -146,8 +146,7 @@ int main() {
   F_loadres(F_getresid("COLORMAP"),clrmap,0,256*11);
   F_loadres(F_getresid("COLORMAP"),rom,256*11,132*3);
   F_loadres(F_getresid("COLORMAP"),&chk,256*11+132*3,sizeof(chk));
-{
-    int flg=1;
+    flg=1;
     for(i=0;i<3;++i) if(rom[i].o)
       if(memcmp((void*)rom[i].o,rom[i].d,128)!=0)
         flg=0;
@@ -162,7 +161,6 @@ int main() {
     --chk.run;
     F_saveres(F_getresid("COLORMAP"),&chk,256*11+132*3,2);
   }
-}
 //logo("*******************************************************************\n");
 //logo("**                                                               **\n");
 //logo("**                          DEMO-‚…‘ˆŸ                          **\n");

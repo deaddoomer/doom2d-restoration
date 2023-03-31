@@ -16,13 +16,6 @@
 #include "misc.h"
 #include "fx.h"
 
-// HACK: this externs will fix addresses of global variables
-// as they ordeded in original doom2d.exe
-extern int _wp0, _wp1, _wp2, _wp3, _wp4, _wp5, _wp6;
-extern int _wp10, _wp11, _wp12, _wp13, _wp14, _wp15, _wp16;
-extern int _wp17, _wp18, _wp19, _wp20, _wp21, _wp22;
-extern int _wp23, _wp24, _wp25, _wp26, _wp27, _wp28, _wp29;
-
 #define MANCOLOR 0xD0
 
 #define MAX_ATM 90
@@ -195,10 +188,8 @@ void MN_alloc(void) {
     logo_gas(j+5,GGAS_TOTAL);
   }
   for(i=0;i<8;++i) fspr[i]=Z_getspr("FIRE",i,0,NULL);
-do {
   pl_spr[0]=Z_getspr("PLAY",'N'-'A',0,NULL);
   pl_spr[1]=Z_getspr("PLAY",'W'-'A',0,NULL);
-} while(0);
   impsitsnd[0]=Z_getsnd("BGSIT1");
   impsitsnd[1]=Z_getsnd("BGSIT2");
   impdthsnd[0]=Z_getsnd("BGDTH1");
@@ -212,9 +203,7 @@ do {
   fsnd=Z_getsnd("FLAME");
   firsnd=Z_getsnd("FIRSHT");
   slopsnd=Z_getsnd("SLOP");
-do {
   swgsnd=Z_getsnd("SKESWG");
-} while(0);
   pchsnd=Z_getsnd("SKEPCH");
   telesnd=Z_getsnd("TELEPT");
   pauksnd=Z_getsnd("PAUK1");

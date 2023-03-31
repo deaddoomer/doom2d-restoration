@@ -28,20 +28,6 @@ extern map_block_t blk;
 byte w_horiz=ON;
 static void *horiz=NULL;
 
-#ifdef USE_LAYOUT_HACK
-extern int w_o,w_x,w_y;
-int sky_type=1; // not extern
-extern void *walp[256];
-extern dword walf[256];
-extern int walh[256];
-extern byte walswp[256];
-extern byte walani[256];
-extern int anih[ANIT][5];
-byte anic[ANIT]; // not extern
-extern byte fldb[FLDH][FLDW];
-extern byte fldf[FLDH][FLDW];
-extern byte fld[FLDH][FLDW];
-#else
 int w_o,w_x,w_y,sky_type=1;
 int w_o,w_x,w_y;
 void *walp[256];
@@ -54,7 +40,6 @@ byte anic[ANIT];
 byte fldb[FLDH][FLDW];
 byte fldf[FLDH][FLDW];
 byte fld[FLDH][FLDW];
-#endif
 
 
 static void getname(int n,char *s) {
