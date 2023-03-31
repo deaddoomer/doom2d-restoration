@@ -16,6 +16,16 @@
 #include <gui.h>
 #include "..\map.h"
 
+#ifdef USE_LAYOUT_HACK
+extern int d_start,d_end,m_start,m_end,s_start,s_end,w_start,w_end,wad_num;
+extern mwad_t wad[MAX_WAD];
+
+extern char wads[MAX_WADS][_MAX_PATH];
+extern int wadh[MAX_WADS];
+
+extern char f_drive[_MAX_DRIVE],f_dir[_MAX_DIR],f_name[_MAX_FNAME],f_ext[_MAX_EXT],
+  f_path[_MAX_PATH];
+#else
 int d_start,d_end,m_start,m_end,s_start,s_end,w_start,w_end,wad_num;
 mwad_t wad[MAX_WAD];
 
@@ -24,6 +34,7 @@ static int wadh[MAX_WADS];
 
 char f_drive[_MAX_DRIVE],f_dir[_MAX_DIR],f_name[_MAX_FNAME],f_ext[_MAX_EXT],
   f_path[_MAX_PATH];
+#endif
 
 void F_startup(void) {
   logo("F_startup: setting up file system\n");
@@ -171,7 +182,12 @@ int F_getreslen(int r) {
 // reads bytes from file until CR
 void F_readstr(int h,char *s,int m) {
   int i;
+#ifdef USE_LAYOUT_HACK
+  extern char readstr_c;
+#define c readstr_c
+#else
   static char c;
+#endif
 
   for(i=0;;) {
     c=13;
@@ -180,12 +196,20 @@ void F_readstr(int h,char *s,int m) {
     if(i<m) s[i++]=c;
   }
   s[i]=0;
+#ifdef USE_LAYOUT_HACK
+#undef c
+#endif
 }
 
 // reads bytes from file until NUL
 void F_readstrz(int h,char *s,int m) {
   int i;
+#ifdef USE_LAYOUT_HACK
+extern char readstrz_c;
+#define c readstrz_c
+#else
   static char c;
+#endif
 
   for(i=0;;) {
     c=0;
@@ -194,9 +218,16 @@ void F_readstrz(int h,char *s,int m) {
     if(i<m) s[i++]=c;
   }
   s[i]=0;
+#ifdef USE_LAYOUT_HACK
+#undef c
+#endif
 }
 
+#ifdef USE_LAYOUT_HACK
+extern map_block_t blk;
+#else
 map_block_t blk;
+#endif
 
 void F_loadmap(char *fn,char *wn) {
   int h,o,n;
@@ -233,8 +264,13 @@ void F_loadmap(char *fn,char *wn) {
   W_allocwalls();
 }
 
+#ifdef USE_LAYOUT_HACK
+extern int savh;
+extern int savo;
+#else
 static int savh;
 static int savo;
+#endif
 static char tmp_file[128]="$TMPWAD$.$$$";
 
 int F_savemap(char *fn,char *wn) {
@@ -242,7 +278,11 @@ int F_savemap(char *fn,char *wn) {
   int h,o,n,c,l;
   wad_t *w;
   void *buf;
+#ifdef USE_LAYOUT_HACK
+  extern wad_t we;
+#else
   static wad_t we;
+#endif
 
   w=buf=NULL;
   rename(fn,tmp_file);

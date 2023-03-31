@@ -12,7 +12,8 @@
 %CPP% view.cpp
 %CC% thing.c
 %CC% switch.c
-%CC% files.c
+%AS% lfiles.asm
+%CC% -dUSE_LAYOUT_HACK files.c
 %CC% config.c
 %CC% error.c
 %CC% memory.c
@@ -21,8 +22,8 @@
 %VGA2OBJ% editor.vga editor.obj
 %CC% miscc.c
 
-@echo file main,edit,view,thing,switch,files,config, >  link.tmp
-@echo error,memory,miscc,misca,vga2,editor           >> link.tmp
+@echo file main,edit,view,thing,switch,lfiles,files, >  link.tmp
+@echo config,error,memory,miscc,misca,vga2,editor    >> link.tmp
 
 %LD% NAME editor @link.tmp
 
