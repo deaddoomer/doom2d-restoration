@@ -43,7 +43,8 @@ void CFG_args(void) {
   char *s;
 
   logo("CFG_args: checking arguments\n");
-  for(s=strtok(getcmd(buf)," \r\n\t");s;s=strtok(NULL," \r\n\t")) {
+  // HACK: -4 is hack to match original editor.exe layout
+  for(s=strtok(getcmd(buf-4)," \r\n\t");s;s=strtok(NULL," \r\n\t")) {
 next:
     if(*s=='/' || *s=='-') ++s;
     for(j=0;cfg[j].t;++j) if(cfg[j].par) if(stricmp(s,cfg[j].par)==0) {
