@@ -1,4 +1,4 @@
-@SET CPP=wpp386 -zp=1 -s -olrt -5s -zq -j -i=..
+@SET CPP=wpp386 -zp1 -s -olrt -5s -zq -j -i=..
 @SET AS=tasm /ml/z/q/t/m5
 @SET WL=wlib -q -b
 @SET FNT2OBJ=..\..\utils\fnt2obj3.exe
