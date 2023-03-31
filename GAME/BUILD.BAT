@@ -31,12 +31,12 @@
 %CC% switch.c
 %CC% fx.c
 %CC% bmap.c
-%AS% viewa.asm
+%AS% lview.asm
 %CC% -dUSE_LAYOUT_HACK view.c
 %CC% menu.c
-%AS% gamea.asm
+%AS% lgame.asm
 %CC% -dUSE_LAYOUT_HACK game.c
-%AS% filesa.asm
+%AS% lfiles.asm
 %CC% -dUSE_LAYOUT_HACK files.c
 %CC% config.c
 %CC% error.c
@@ -47,7 +47,7 @@
 %CC% miscc.c
 
 @echo file main,player,dots,weapons,items,monster,switch, >  link.tmp
-@echo fx,bmap,viewa,view,menu,gamea,game,filesa,files,    >> link.tmp	
+@echo fx,bmap,lview,view,menu,lgame,game,lfiles,files,    >> link.tmp
 @echo config,error,memory,vga2,anim,misca,miscc           >> link.tmp
 
 %LD% NAME doom2d @link.tmp
