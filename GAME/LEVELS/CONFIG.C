@@ -42,7 +42,7 @@ void CFG_args(void) {
   dword n;
   char *s;
 
-  logo("CFG_args: проверка командной строки\n");
+  logo("CFG_args: checking arguments\n");
   for(s=strtok(getcmd(buf)," \r\n\t");s;s=strtok(NULL," \r\n\t")) {
 next:
     if(*s=='/' || *s=='-') ++s;
@@ -82,7 +82,7 @@ next:
 	  F_mainwad(s=strtok(NULL," \r\n\t"));
 	  break;
 	default:
-	  ERR_failinit("Неизвестный тип в cfg!");
+	  ERR_failinit("BUG: unknown type in cfg!");
 	  }
 	  cfg[j].o=1;break;
     }
@@ -95,7 +95,7 @@ void CFG_load(void) {
   char s[128];
   char *p1,*p2;
 
-  logo("CFG_load: загрузка конфигурации из %s\n",cfg_file);
+  logo("CFG_load: loading config from %s\n",cfg_file);
   if((h=open(cfg_file,O_RDONLY|O_BINARY))==-1) {
     perror("Cannot open file");return;
   }
@@ -134,7 +134,7 @@ void CFG_load(void) {
 	  F_mainwad(p2);
 	  break;
 	default:
-	  ERR_failinit("Неизвестный тип в cfg!");
+	  ERR_failinit("BUG: unknown type in cfg!");
 	  }
 	  break;
     }

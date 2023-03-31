@@ -269,7 +269,6 @@ void desk::command(int c,long p) {
   char *s;
   static menu_t sysmnu[]={
 	"Опции",E_OPTIONS,"Справка",E_ABOUT,"Очистка",E_NEWMAP,
-	"Небо",E_SETSKY,
 	"Выход",E_QUIT,
 	NULL,0
   };
@@ -341,65 +340,6 @@ void desk::command(int c,long p) {
 	case E_ABOUT:
 	  about();
 	  break;
-	case E_SETSKY:
-	  if(++skytype>2) skytype=1;
-	  W_setsky();
-	  desktop.redraw();
-	  break;
-	case E_HELP:
-	  switch(p) {
-	    case H_MAIN:
-	      message(MB_OK,"Клавиши:\n\n"
-	        "F1      - помощь\n"
-	        "F2      - запись уровня\n"
-	        "F3      - загрузка уровня\n"
-	        "F10     - выход из редактора\n"
-	        "стрелки - прокрутка вида\n"
-	      );break;
-	    case H_BACK: case H_FRONT:
-	      message(MB_OK,"Выберите текстуру из списка.\n"
-	        "(Добавьте, если список пустой.)\n\n"
-	        "На виде уровня нажмите левую кнопку мыши и, не\n"
-	        "отпуская ее, растяните прямоугольник, который\n"
-	        "надо заполнить текстурой.\n\n"
-	        "Аналогично, нажимая правую кнопку мыши, можно\n"
-	        "стереть %s.\n",(p==H_BACK)?"фон":"передний план"
-	      );break;
-	    case H_WALL:
-	      message(MB_OK,
-	        "Выберите тип стены.\n"
-	        "Выберите текстуру, которую хотите поставить\n"
-	        "вместе с типом стены.\n"
-	        "Если вы хотите изменить только тип, нажмите\n"
-	        "кнопку над списком текстур.\n\n"
-	        "На виде уровня нажмите левую кнопку мыши и, не\n"
-	        "отпуская ее, растяните прямоугольник, который\n"
-	        "надо заполнить.\n\n"
-	        "Аналогично, нажимая правую кнопку мыши, можно\n"
-	        "стереть стены.\n\n"
-	        "Блок. мон. - блокировка монстров.\n"
-	      );break;
-	    case H_THING:
-	      message(MB_OK,
-	        "Чтобы поставить новый предмет, выберите его из списка\n"
-	        "и на виде уровня нажмите правую кнопку мыши.\n\n"
-	        "Чтобы убрать предмет, щёлкните по нему правой кнопкой.\n\n"
-	        "Чтобы передвинуть предмет, нажмите на нём левую кнопку,\n"
-	        "и не отпуская её, перетащите предмет.\n"
-	      );break;
-	    case H_SWITCH:
-	      message(MB_OK,
-	        "Чтобы поставить новую кнопку, в нужном месте на виде\n"
-	        "уровня нажмите левую кнопку мыши, и не отпуская её,\n"
-	        "нажмите правую.\n\n"
-	        "Чтобы поставить точку воздействия, нажмите правую\n"
-	        "кнопку мыши.\n"
-	      );break;
-	    case H_SWTYPE:
-	      if(!(s=SW_gethelp())) break;
-	      message(MB_OK,"%s\n",s);
-	      break;
-	  }break;
 	default:
 	  msg=c;par=p;break;
 //	  def_command(c,p);
@@ -569,7 +509,7 @@ void sprview::draw(void) {
 
 extern "C" void edit(void) {
   static textstr t1(115,115,1,5,"ФОН",&smallfont,15),
-		 t2(115,115,1,5,"СТЕНЫ, ДВЕРИ И Т.П.",&smallfont,15),
+		 t2(115,115,1,5,"СТЕНЫ",&smallfont,15),
 		 t3(115,115,1,5,"ПЕРЕДНИЙ ПЛАН",&smallfont,15),
 		 t4(115,115,1,5,"ВЕЩИ, МОНСТРЫ И Т.П.",&smallfont,15),
 		 t5(115,115,1,5,"КНОПКИ",&smallfont,15),
@@ -582,12 +522,6 @@ extern "C" void edit(void) {
 		 swt5(115,157,0,5,"красный ключ",&smallfont,15),
 		 swt6(115,167,0,5,"зеленый ключ",&smallfont,15),
 		 swt7(115,177,0,5,"синий ключ",&smallfont,15);
-  static sprbutton hb1(199,113,6,7,&help_icon,E_HELP,H_BACK,0x3B00),
-		hb2(199,113,6,7,&help_icon,E_HELP,H_WALL,0x3B00),
-		hb3(199,113,6,7,&help_icon,E_HELP,H_FRONT,0x3B00),
-		hb4(199,113,6,7,&help_icon,E_HELP,H_THING,0x3B00),
-		hb5(199,113,6,7,&help_icon,E_HELP,H_SWITCH,0x3B00),
-		hb6(120,123,6,7,&help_icon,E_HELP,H_SWTYPE,0x3B00);
   static button baw1(145,125,60,10,"Добавить",E_ADDWALL,0,-1),
 		baw2(155,125,50,10,"Добавить",E_ADDWALL,0,-1),
 		baw3(145,125,60,10,"Добавить",E_ADDWALL,0,-1),
@@ -607,18 +541,17 @@ extern "C" void edit(void) {
   static strlist2 wtl1(90,125,60,70,wt_name+1,E_WTYPE,4);
   static sprbutton b1(305,2,13,10,&system_icon,E_SYSTEM,0,-1),
 		   b2(270,10,16,15,&load_icon,E_LOADMAP,0,0x3D00),
-		   b3(270,40,16,15,&save_icon,E_SAVEMAP,0,0x3C00),
-		   b5(308,15,6,7,&help_icon,E_HELP,H_MAIN,0x3B00);
+		   b3(270,40,16,15,&save_icon,E_SAVEMAP,0,0x3C00);
   static vcontbox vc1(0,110,210,90,20,cnt1,ETHING,E_ETYPE);
   static button b4(265,70,36,15,"Музыка",E_MUSIC,0,-1);
 
-  logo("GUI_start: настройка графического интерфейса\n");
+  logo("GUI_start: setting up Graphics User Interface\n");
   int i,t;
   for(thtnum=1,t=TH_PLR2;t!=TH_PLR1;++thtnum,t=TH_nextt(t));
   if(!(thtn_list=(char**)malloc((thtnum+1)*4)))
-	ERR_failinit("  Не хватает памяти");
+	ERR_failinit("  Not enough memory");
   if(!(tht_tlist=(int*)malloc(thtnum*4)))
-	ERR_failinit("  Не хватает памяти");
+	ERR_failinit("  Not enough memory");
   for(t=TH_PLR1,i=0;i<thtnum;++i,t=TH_nextt(t)) {
 	thtn_list[i]=TH_getname(tht_tlist[i]=t);
   }thtn_list[i]=NULL;
@@ -627,13 +560,13 @@ extern "C" void edit(void) {
   w_x=FLDW*CELW/2+100;w_y=FLDH*CELH/2+49;
   rebuild_wl();
   GUI_start();setgamma(gamma);
-  desktop<<=vw+=vc1+=mw1+=b1+=b2+=b3+=b4+=b5;
+  desktop<<=vw+=vc1+=mw1+=b1+=b2+=b3+=b4;
   wtl1.lst->cline=0;
-  t1+=wl1+=baw1+=*(wlsv[0]=new sprview(145,140,60,55,NULL))+=hb1;
-  t2+=wl2+=wtl1+=baw2+=bnw1+=*(wlsv[1]=new sprview(155,140,50,55,NULL))+=hb2;
-  t3+=wl3+=baw3+=*(wlsv[2]=new sprview(145,140,60,55,NULL))+=hb3;
-  t4+=thl1+=th_cn+=thf_r+=thf_dm+=tht1+=tht2+=hb4;
+  t1+=wl1+=baw1+=*(wlsv[0]=new sprview(145,140,60,55,NULL));
+  t2+=wl2+=wtl1+=baw2+=bnw1+=*(wlsv[1]=new sprview(155,140,50,55,NULL));
+  t3+=wl3+=baw3+=*(wlsv[2]=new sprview(145,140,60,55,NULL));
+  t4+=thl1+=th_cn+=thf_r+=thf_dm+=tht1+=tht2;
   t5+=bsw1+=bsw2+=bsw3+=sw_cn+=swt1+=swt2+=swt3+=swt4+=swt5+=swt6+=swt7
-    +=swf_pp+=swf_mp+=swf_pn+=swf_mn+=swf_kr+=swf_kg+=swf_kb+=hb5+=hb6;
+    +=swf_pp+=swf_mp+=swf_pn+=swf_mn+=swf_kr+=swf_kg+=swf_kb;
   for(;;) GUI();
 }

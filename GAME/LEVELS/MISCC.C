@@ -11,7 +11,7 @@
 char **Z_makelist(void) {
   char **p;
 
-  if(!(p=malloc(16004))) ERR_fatal("Не хватает памяти");
+  if(!(p=malloc(16004))) ERR_fatal("Not enough memory");
   *p=NULL;
   return p;
 }

@@ -41,7 +41,7 @@ void logo(const char *s,...) {
   fflush(stdout);
   x=wherex();y=wherey();
   gotoxy(1,1);putcn(' ',0x1F,80);
-  gotoxy(25,1);cputstr("Редактор уровней   Версия 1.32");
+  gotoxy(28,1);cputstr("Doom2D Map Editor V1.30");
   gotoxy(x,y);
 }
 
@@ -74,7 +74,7 @@ void edit(void);
 int main() {
   textmode();gotoxy(1,2);
   randomize();
-  F_addwad("CMRTKA.WAD");
+  F_addwad("..\\Doom2D.wad");
   CFG_args();
   F_startup();
   CFG_load();
