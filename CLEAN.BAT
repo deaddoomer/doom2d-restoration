@@ -9,3 +9,7 @@
 @CD   GAME
 @CALL CLEAN.BAT
 @CD   ..
+
+@CD   GAME\LEVELS
+@CALL CLEAN.BAT
+@CD   ..\..
