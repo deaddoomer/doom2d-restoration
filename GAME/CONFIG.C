@@ -112,7 +112,7 @@ next:
 	  for(s=strtok(NULL," \r\n\t");s;s=strtok(NULL," \r\n\t")) {
 		if(*s=='/' || *s=='-') goto next;
 #ifdef DEMO
-		logo("  %s … ―®¤ª«ξη¥­!\n",s);
+		logo("  %s ΠΠ• ΠΏΠΎΠ΄ΠΊΠ»ΡΡ‡ΠµΠ½!\n",s);
 #else
 		F_addwad(s);
 #endif

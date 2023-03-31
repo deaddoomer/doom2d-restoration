@@ -1,2 +1,2 @@
 # All text files in work tree must be CRLF-formatted
-* text=auto eol=crlf
+* text=auto eol=crlf working-tree-encoding=CP866
