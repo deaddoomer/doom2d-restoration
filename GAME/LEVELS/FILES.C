@@ -26,7 +26,7 @@ char f_drive[_MAX_DRIVE],f_dir[_MAX_DIR],f_name[_MAX_FNAME],f_ext[_MAX_EXT],
   f_path[_MAX_PATH];
 
 void F_startup(void) {
-  logo("F_startup: настройка файловой системы\n");
+  logo("F_startup: setting up file system\n");
 }
 
 void F_addwad(char *fn) {
@@ -35,7 +35,7 @@ void F_addwad(char *fn) {
   for(i=0;i<MAX_WADS;++i) if(wads[i][0]==0) {
     strcpy(wads[i],fn);return;
   }
-  ERR_failinit("Не могу подключить WAD %s",fn);
+  ERR_failinit("Cannot add WAD %s",fn);
 }
 
 void F_mainwad(char *fn) {
@@ -49,32 +49,32 @@ void F_initwads(void) {
   long n,o;
   wad_t w;
 
-  logo("F_initwads: подключение WAD-файлов\n");
+  logo("F_initwads: link WAD files\n");
   for(i=0;i<MAX_WAD;++i) wad[i].n[0]=0;
-  logo("  подключается %s\n",wads[0]);
+  logo("  adding %s\n",wads[0]);
   if((wadh[0]=h=open(wads[0],O_RDONLY|O_BINARY))==-1)
-    ERR_failinit("Не могу открыть файл: %s",sys_errlist[errno]);
+    ERR_failinit("Cannot open file: %s",sys_errlist[errno]);
   *s=0;read(h,s,4);
   if(strncmp(s,"IWAD",4)!=0 && strncmp(s,"PWAD",4)!=0)
-    ERR_failinit("Нет подписи IWAD или PWAD");
+    ERR_failinit("No IWAD or PWAD id");
   read(h,&n,4);read(h,&o,4);lseek(h,o,SEEK_SET);
   for(j=0,p=0;j<n;++j) {
     read(h,&w,16);
-    if(p>=MAX_WAD) ERR_failinit("Слишком много элементов WAD'а");
+    if(p>=MAX_WAD) ERR_failinit("Too many WAD entries");
     memcpy(wad[p].n,w.n,8);
     wad[p].o=w.o;wad[p].l=w.l;wad[p].f=0;
     ++p;
   }
   for(i=1;i<MAX_WADS;++i) if(wads[i][0]!=0) {
-    logo("  подключается %s\n",wads[i]);
+    logo("  adding %s\n",wads[i]);
     if((wadh[i]=h=open(wads[i],O_RDONLY|O_BINARY))==-1)
-      ERR_failinit("Не могу открыть файл: %s",sys_errlist[errno]);
+      ERR_failinit("Cannot open file: %s",sys_errlist[errno]);
     _splitpath(wads[i],f_drive,f_dir,f_name,f_ext);
     if(stricmp(f_ext,".lmp")==0) {
       for(k=0;k<MAX_WAD;++k) if(strnicmp(wad[k].n,f_name,8)==0)
 	{wad[k].o=0L;wad[k].l=filelength(h);wad[k].f=i;break;}
       if(k>=MAX_WAD) {
-	if(p>=MAX_WAD) ERR_failinit("Слишком много элементов WAD'а");
+	if(p>=MAX_WAD) ERR_failinit("Too many WAD entries");
 	memset(wad[p].n,0,8);
 	strncpy(wad[p].n,f_name,8);
 	wad[p].o=0L;wad[p].l=filelength(h);wad[p].f=i;
@@ -84,14 +84,14 @@ void F_initwads(void) {
     }
     *s=0;read(h,s,4);
     if(strncmp(s,"IWAD",4)!=0 && strncmp(s,"PWAD",4)!=0)
-      ERR_failinit("Нет подписи IWAD или PWAD");
+      ERR_failinit("No IWAD or PWAD id");
     read(h,&n,4);read(h,&o,4);lseek(h,o,SEEK_SET);
     for(j=0;j<n;++j) {
       read(h,&w,16);
       for(k=0;k<MAX_WAD;++k) if(strnicmp(wad[k].n,w.n,8)==0)
 	{wad[k].o=w.o;wad[k].l=w.l;wad[k].f=i;break;}
       if(k>=MAX_WAD) {
-	if(p>=MAX_WAD) ERR_failinit("Слишком много элементов WAD'а");
+	if(p>=MAX_WAD) ERR_failinit("Too many WAD entries");
 	memcpy(wad[p].n,w.n,8);
 	wad[p].o=w.o;wad[p].l=w.l;wad[p].f=i;
 	++p;
@@ -110,10 +110,10 @@ void F_allocres(void) {
   s_end=F_getresid("S_END");
   w_start=F_getresid("W_START");
   w_end=F_getresid("W_END");
-  if(d_end<d_start) ERR_failinit("D_END до D_START");
-  if(m_end<m_start) ERR_failinit("M_END до M_START");
-  if(s_end<s_start) ERR_failinit("S_END до S_START");
-  if(w_end<w_start) ERR_failinit("W_END до W_START");
+  if(d_end<d_start) ERR_failinit("D_END is before D_START");
+  if(m_end<m_start) ERR_failinit("M_END is before M_START");
+  if(s_end<s_start) ERR_failinit("S_END is before S_START");
+  if(w_end<w_start) ERR_failinit("W_END is before W_START");
 }
 
 // load resource
@@ -122,9 +122,9 @@ void F_loadres(int r,void *p,dword o,dword l) {
 
   fo=tell(fh=wadh[wad[r].f]);
   if(lseek(fh,wad[r].o+o,SEEK_SET)==-1L)
-    ERR_fatal("Ошибка при чтении файла");
+    ERR_fatal("File seek error");
   if((dword)read(fh,p,l)!=l)
-    ERR_fatal("Ошибка при загрузке ресурса %.8s",wad[r].n);
+    ERR_fatal("Error loading %.8s",wad[r].n);
   lseek(fh,fo,SEEK_SET);
 }
 
@@ -133,7 +133,7 @@ int F_getresid(char *n) {
   int i;
 
   for(i=0;i<wad_num;++i) if(strnicmp(wad[i].n,n,8)==0) return i;
-  ERR_fatal("F_getresid: ресурс %s не найден",n);
+  ERR_fatal("F_getresid: %s not found",n);
   return -1;
 }
 
@@ -160,7 +160,7 @@ int F_getsprid(char n[4],int s,int d) {
       if(a==d) return i;
       if(b==d) return(i|0x8000);
     }
-  ERR_fatal("F_getsprid: изображение %.4s%c%c не найдено",n,(byte)s,(byte)d);
+  ERR_fatal("F_getsprid: %.4s%c%c not found",n,(byte)s,(byte)d);
   return -1;
 }
 
@@ -323,7 +323,7 @@ char **F_make_dmm_list(void) {
   char **p,s[9];
   int i,j;
 
-  if(!(p=malloc(1000*4))) ERR_fatal("Не хватает памяти");
+  if(!(p=malloc(1000*4))) ERR_fatal("Not enough memory");
   s[8]=0;
   for(i=m_start+1,j=0;i<m_end;++i) if(wad[i].l>=8) {
 	if(memicmp(wad[i].n,"DMI",3)==0) continue;
@@ -341,7 +341,7 @@ char **F_make_wall_list(void) {
   char **p,s[9];
   int i;
 
-  if(!(p=malloc((w_end-w_start)*4))) ERR_fatal("Не хватает памяти");
+  if(!(p=malloc((w_end-w_start)*4))) ERR_fatal("Not enough memory");
   s[8]=0;
   for(i=0;i+w_start+1<w_end;++i) {
 	memcpy(s,wad[i+w_start+1].n,8);

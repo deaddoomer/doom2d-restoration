@@ -31,7 +31,7 @@ void ERR_fatal(char *s,...) {
   va_list ap;
 
   close_all();
-  puts("\nКРИТИЧЕСКАЯ ОШИБКА:");
+  puts("\nFATAL ERROR:");
   va_start(ap,s);
   vprintf(s,ap);
   va_end(ap);
