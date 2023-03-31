@@ -9,3 +9,7 @@
 @CD   GAME
 @CALL BUILD.BAT
 @CD   ..
+
+@CD   GAME\LEVELS
+@CALL BUILD.BAT
+@CD   ..\..
