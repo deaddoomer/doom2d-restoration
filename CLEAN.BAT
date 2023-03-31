@@ -1,5 +1,11 @@
-@CD .\LIBS
+@CD   UTILS.BAT
 @CALL CLEAN.BAT
-@CD ..\GAME
+@CD   ..
+
+@CD   LIBS
 @CALL CLEAN.BAT
-@CD ..
+@CD   ..
+
+@CD   GAME
+@CALL CLEAN.BAT
+@CD   ..

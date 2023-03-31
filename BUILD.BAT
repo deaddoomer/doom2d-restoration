@@ -1,5 +1,11 @@
-@CD .\LIBS
+@CD   UTILS
 @CALL BUILD.BAT
-@CD ..\GAME
+@CD   ..
+
+@CD   LIBS
 @CALL BUILD.BAT
-@CD ..
+@CD   ..
+
+@CD   GAME
+@CALL BUILD.BAT
+@CD   ..
