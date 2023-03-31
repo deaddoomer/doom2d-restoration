@@ -1,4 +1,4 @@
-This repository contains restored sources of Doom2D v1.35
+This branch contains restored sources of Doom2D v1.35
 Based on original sources of Doom2D v1.35 published by Prikol Software
 
 How to build:
