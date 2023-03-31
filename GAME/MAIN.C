@@ -82,9 +82,9 @@ void logo(const char *s,...) {
   x=wherex();y=wherey();
   gotoxy(1,1);putcn(' ',0x4F,80);
 #ifdef DEMO
-  gotoxy(25,1);cputstr("Операция \"Смятка\" V1.35 *demo*");
+  gotoxy(31,1);cputstr("Doom2D V1.40 *demo*");
 #else
-  gotoxy(25,1);cputstr("Операция \"Смятка\"  версия 1.35");
+  gotoxy(31,1);cputstr("Doom2D версия 1.40");
 #endif
   gotoxy(x,y);
 }
@@ -152,7 +152,7 @@ int main() {
 //  _dos_setvect(0,dbzfunc);
   randomize();
   F_startup();
-  F_addwad("CMRTKA.WAD");
+  F_addwad("DOOM2D.WAD");
   CFG_args();
   CFG_load();
   F_initwads();

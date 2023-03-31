@@ -81,15 +81,32 @@ static char *sleepanim[MN_TN]={
   "","U","U","U","","T","","","","","","","","","","","","","","W"
 };
 
+#ifdef USE_LAYOUT_HACK
+extern int hit_xv,hit_yv;
+
+#define spr  mon_spr
+#define sprd mon_sprd
+#define snd  mon_snd
+extern void *spr[MN_TN][29*2],*fspr[8],*fsnd,*pauksnd,*trupsnd,*sgun[2];
+extern void *gspr[13][8];
+extern char sprd[MN_TN][29*2];
+extern void *snd[MN_TN][5],*impsitsnd[2],*impdthsnd[2],*firsnd,*slopsnd,*gsnd[4];
+extern void *swgsnd,*pchsnd,*pl_spr[2],*telesnd;
+extern void *positsnd[3],*podthsnd[3];
+extern mn_t mn[MAXMN];
+extern int mnum,gsndt;
+#else
 int hit_xv,hit_yv;
 
 static void *spr[MN_TN][29*2],*fspr[8],*fsnd,*pauksnd,*trupsnd,*sgun[2];
+static void *gspr[13][8];
 static char sprd[MN_TN][29*2];
 static void *snd[MN_TN][5],*impsitsnd[2],*impdthsnd[2],*firsnd,*slopsnd,*gsnd[4];
 static void *swgsnd,*pchsnd,*pl_spr[2],*telesnd;
 static void *positsnd[3],*podthsnd[3];
 static mn_t mn[MAXMN];
 static int mnum,gsndt;
+#endif
 static mnsz_t mnsz[MN_TN+1]={
 //rad  ht  life  pain rv jv  slop min_pn
     0,  0,    0,    0, 0, 0,    0,    0,	// none
@@ -196,6 +213,11 @@ void MN_alloc(void) {
   for(i=0;i<8;++i) fspr[i]=Z_getspr("FIRE",i,0,NULL);
   pl_spr[0]=Z_getspr("PLAY",'N'-'A',0,NULL);
   pl_spr[1]=Z_getspr("PLAY",'W'-'A',0,NULL);
+  strcpy(gsn,"PLPx");
+  for(i=0;i<13;++i) {
+    gsn[3]=i<10?i+'0':i+'A'-10;
+    for(j=0;j<8;++j) gspr[i][j]=Z_getspr(gsn,j,0,NULL);
+  }
   impsitsnd[0]=Z_getsnd("BGSIT1");
   impsitsnd[1]=Z_getsnd("BGSIT2");
   impdthsnd[0]=Z_getsnd("BGDTH1");
@@ -214,6 +236,7 @@ void MN_alloc(void) {
   telesnd=Z_getsnd("TELEPT");
   pauksnd=Z_getsnd("PAUK1");
   trupsnd=Z_getsnd("UTRUP");
+  strcpy(gsn,"GOODx");
   for(i=0;i<4;++i) {gsn[4]=i+'1';gsnd[i]=Z_getsnd(gsn);}
 }
 
@@ -266,14 +289,29 @@ static void setst(int i,int st) {
   mn[i].ap=a;
 }
 
+static int last=0;
+
 int MN_spawn(int x,int y,byte d,int t) {
   int i;
 
   if(g_dm && nomon && t<MN_PL_DEAD) return -1;
-  for(i=0;i<MAXMN;++i) if(!mn[i].t) goto ok;
-  for(i=0;i<MAXMN;++i) if(mn[i].t>=MN_PL_DEAD) goto ok;
+  i=last;
+  for(;;) {
+    if(++i>=MAXMN) i=0;
+    if(i==last) break;
+    if(!mn[i].t) goto ok;
+  }
+  i=last+1;
+  for(;;) {
+    if(i>=MAXMN) i=0;
+    if(i==last) break;
+    if(mn[i].t>=MN_PL_DEAD) goto ok;
+    i++;
+  }
   return -1;
 ok:
+  last++;
+  if(last>=MAXMN) last=0; else last=last;
   mn[i].o.x=x;mn[i].o.y=y;
   mn[i].o.xv=mn[i].o.yv=mn[i].o.vx=mn[i].o.vy=0;
   mn[i].d=d;mn[i].t=t;
@@ -283,7 +321,7 @@ ok:
     mn[i].life=mnsz[t].l;
     setst(i,SLEEP);mn[i].s=random(18);
     ++mnum;
-  }else {mn[i].o.r=8;mn[i].o.h=6;mn[i].life=0;mn[i].st=DEAD;}
+  }else {mn[i].o.r=8;mn[i].o.h=6;mn[i].life=0;mn[i].st=DEAD;mn[i].s=0;}
   mn[i].aim=-3;mn[i].atm=0;
   mn[i].pain=0;
   mn[i].ammo=0;
@@ -293,9 +331,31 @@ ok:
 
 int MN_spawn_deadpl(obj_t *o,byte c,int t) {
   int i;
+  static short gsz[13][2]={
+    {3,6},
+    {3,7},
+    {4,13},
+    {3,7},
+    {3,8},
+    {4,6},
+    {2,5},
+    {2,5},
+    {1,3},
+    {1,3},
+    {1,3},
+    {1,4},
+    {1,3}
+  };
 
   if((i=MN_spawn(o->x,o->y,c,t+MN_PL_DEAD))==-1) return -1;
-  mn[i].o=*o;return i;
+  mn[i].o=*o;
+  if(t>=2) {
+    mn[i].o.r=gsz[t-2][0];
+    mn[i].o.h=gsz[t-2][1];
+    mn[i].s=rand()&0xff;
+    mn[i].ammo=(random(2)*2-1)*(random(20)+12);
+  }
+  return i;
 }
 
 static int isfriend(int a,int b) {
@@ -477,6 +537,7 @@ static int iscorpse(obj_t *o,int n) {
 
 void MN_act(void) {
   int i,st,sx,sy,t;
+  int gx,gy;
   static obj_t o;
   static int pt_x=0,pt_xs=1,pt_y=0,pt_ys=1;
 
@@ -492,7 +553,37 @@ void MN_act(void) {
 	case MN_SOUL: case MN_PAIN: case MN_CACO:
 	  if(mn[i].st!=DIE && mn[i].st!=DEAD) --mn[i].o.yv;
 	  break;
-  }z_mon=1;st=Z_moveobj(&mn[i].o);z_mon=0;
+  }
+  if(t>=MN_PL_HEAD1) {
+    t-=MN_PL_HEAD1;
+    o=mn[i].o;
+    st=Z_moveobj(&mn[i].o);
+    if(st&(Z_HITCEIL|Z_HITLAND)) {
+      gy=o.yv+o.vy;
+      if(abs(gy)>20) gy=(gy>0)?20:-20;
+      mn[i].o.vy=0;
+      mn[i].o.yv=-gy/2;
+    }
+    if(st&Z_HITWALL) {
+      gy=o.yv+o.vy;
+      if(abs(gy)>20) gy=(gy>0)?20:-20;
+      mn[i].o.xv=0;
+      mn[i].o.vx=-gy/2;
+    }
+    gx=abs(mn[i].o.xv+mn[i].o.vx-o.xv-o.vx);
+    gy=abs(mn[i].o.yv+mn[i].o.vy-o.yv-o.vy);
+    gx=gy+gx>2?gy+gx-2:0;
+    if(gx>15) gx=15;
+    mn[i].ammo+=(random(2)*8-4)*gx;
+    if(gx==0 && abs(o.xv+o.vx)<2 && abs(o.yv+o.vy)<2) mn[i].ammo/=2;
+    if(st&Z_HITLAND)
+      if(abs(o.yv+o.vy)>2)
+        mn[i].o.vx+=mn[i].ammo/10;
+    mn[i].s=mn[i].s+mn[i].ammo&0xFF;
+    mn[i].ammo=Z_dec(mn[i].ammo,1);
+  } else {
+    z_mon=1;st=Z_moveobj(&mn[i].o);z_mon=0;
+  }
   BM_mark(&mn[i].o,BM_MONSTER);
   if(st&Z_FALLOUT) {
     if(t==MN_ROBO) g_exit=1;
@@ -759,7 +850,11 @@ void MN_draw(void) {
 
   for(i=0;i<MAXMN;++i) if(mn[i].t) {
 	if(mn[i].t>=MN_PL_DEAD) {
-	  Z_drawmanspr(mn[i].o.x,mn[i].o.y,pl_spr[mn[i].t-MN_PL_DEAD],0,mn[i].d);
+	  if(mn[i].t>=MN_PL_HEAD1) {
+	    Z_drawmanspr(mn[i].o.x,mn[i].o.y,gspr[mn[i].t-MN_PL_HEAD1][mn[i].s>>5],0,mn[i].d);
+	  } else {
+	    Z_drawmanspr(mn[i].o.x,mn[i].o.y,pl_spr[mn[i].t-MN_PL_DEAD],0,mn[i].d);
+	  }
 	  continue;
 	}
 	if((mn[i].t!=MN_SOUL && mn[i].t!=MN_PAIN) || mn[i].st!=DEAD) {
@@ -1019,4 +1114,10 @@ void MN_warning(int l,int t,int r,int b) {
       && mn[i].o.y>=t && mn[i].o.y-mn[i].o.h<=b)
         if(Z_canstand(mn[i].o.x,mn[i].o.y,mn[i].o.r))
           mn[i].o.yv=-mnsz[mn[i].t].jv;
+}
+
+obj_t *MN_getobj(int i) {
+  if(i<0 || i>=MAXMN) return NULL;
+  if(!mn[i].t) return NULL;
+  return &mn[i].o;
 }

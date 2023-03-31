@@ -257,9 +257,9 @@ int A8_start(char *nm) {
   }
   sprintf(s,"%sA8\\%s.A8",cd_path,nm);
   if((fh=open(s,O_BINARY|O_RDONLY))==-1) {
-//    if(strk) {free(strk);strk=NULL;}
-//    return 0;
-    ERR_fatal("Не могу открыть файл %s",s);
+    if(strk) {free(strk);strk=NULL;}
+    return 0;
+//    ERR_fatal("Не могу открыть файл %s",s);
   }
   read(fh,&ah,sizeof(ah)-4);
   if(ah.id!=A8_ID || ah.ver!=0) ERR_fatal("Испорченный файл A8 %s",s);

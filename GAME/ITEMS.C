@@ -237,6 +237,19 @@ void IT_spawn(int x,int y,int t) {
   }
 }
 
+void IT_spawnobj(obj_t *o,int t) {
+  int i;
+
+  for(i=0;i<MAXITEM;++i) if(!it[i].t) {
+	it[i].t=t|0x8000;it[i].s=0;
+    it[i].o=*o;
+    it[i].o.r=10;it[i].o.h=8;
+    it[i].o.vx+=it[i].o.xv;
+    it[i].o.xv=0;
+    return;
+  }
+}
+
 void IT_drop_ammo(int t,int n,int x,int y) {
   static int an[8]={10,4,1,40,50,25,5,100};
   int a;

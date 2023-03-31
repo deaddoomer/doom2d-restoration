@@ -61,9 +61,26 @@ void F_loadgame(int);
 
 extern byte cheat;
 
-byte _2pl=0,g_dm=0,g_st=GS_TITLE,g_exit=0,g_map=1,_warp=0,g_music[8]="MENU";
+byte g_bot=0,_2pl=0,g_dm=0,g_st=GS_TITLE,g_exit=0,g_map=1,_warp=0,g_music[8]="MENU";
 byte _net=0;
 int g_sttm=1092;
+#ifdef USE_LAYOUT_HACK
+extern dword g_time;
+extern int dm_pnum,dm_pl1p,dm_pl2p;
+extern pos_t dm_pos[100];
+
+extern void *telepsnd;
+extern void *scrnh[3];
+extern void *cd_scr;
+
+extern int sky_type;
+extern void *ltn[2][2];
+extern int lt_time,lt_type,lt_side,lt_ypos,lt_force;
+extern void *ltnsnd[2];
+
+int g_trans=0; // non extern
+extern int g_transt;
+#else
 dword g_time;
 int dm_pnum,dm_pl1p,dm_pl2p;
 pos_t dm_pos[100];
@@ -78,6 +95,7 @@ int lt_time,lt_type,lt_side,lt_ypos,lt_force;
 void *ltnsnd[2];
 
 int g_trans=0,g_transt;
+#endif
 
 static void set_trans(int st) {
   switch(g_st) {
@@ -120,6 +138,7 @@ void G_loadgame(int h) {
   read(h,&dm_pnum,4);read(h,dm_pos,dm_pnum*sizeof(pos_t));
   read(h,&cheat,1);
   read(h,g_music,8);F_loadmus(g_music);
+  w_ht=_2pl?98:198;
 }
 
 int G_load(int h) {
@@ -139,7 +158,7 @@ void load_game(int n) {
   V_setscr((g_trans)?fx_scr2:scrbuf);V_setrect(0,320,0,200);
   V_clr(0,320,0,200,0);
   if(_2pl) {w_o=0;Z_clrst();w_o=100;Z_clrst();}
-  else {w_o=50;Z_clrst();}
+  else {w_o=0;Z_clrst();}
 //  V_copytoscr(0,320,0,200);
   V_setscr(scrbuf);
   pl1.drawst=0xFF;
@@ -152,6 +171,8 @@ void load_game(int n) {
   S_startmusic();
 }
 
+void BOT_init(void);
+
 void G_start(void) {
   char s[8];
 
@@ -162,7 +183,7 @@ void G_start(void) {
   V_setscr((g_trans)?fx_scr2:scrbuf);V_setrect(0,320,0,200);
   V_clr(0,320,0,200,0);
   if(_2pl) {w_o=0;Z_clrst();w_o=100;Z_clrst();}
-  else {w_o=50;Z_clrst();}
+  else {w_o=0;Z_clrst();}
 //  V_copytoscr(0,320,0,200);
   V_setscr(scrbuf);
   pl1.drawst=0xFF;
@@ -173,13 +194,14 @@ void G_start(void) {
   g_time=0;
   lt_time=1000;
   lt_force=1;
-  if(!_2pl) pl1.lives=3;
+  if(!_2pl) pl1.lives=1;
   BM_remapfld();
   BM_clear(BM_PLR1|BM_PLR2|BM_MONSTER);
   BM_mark(&pl1.o,BM_PLR1);
   if(_2pl) BM_mark(&pl2.o,BM_PLR2);
   MN_mark();
   S_startmusic();
+  BOT_init();
 }
 
 #define GGAS_TOTAL (MN__LAST-MN_DEMON+16+10)
@@ -253,6 +275,8 @@ int G_end_video(void) {
 }
 
 static byte transdraw=0;
+
+int BOT_getkeys(int i);
 
 void G_act(void) {
   static byte pcnt=0;
@@ -353,10 +377,10 @@ void G_act(void) {
   IT_act();
   SW_act();
   if(_2pl) {
-	if(pcnt) {PL_act(&pl1);PL_act(&pl2);}
-	else {PL_act(&pl2);PL_act(&pl1);}
+	if(pcnt) {PL_act(&pl1,BOT_getkeys(0));PL_act(&pl2,BOT_getkeys(1));}
+	else {PL_act(&pl2,BOT_getkeys(1));PL_act(&pl1,BOT_getkeys(0));}
 	pcnt^=1;
-  }else PL_act(&pl1);
+  }else PL_act(&pl1,BOT_getkeys(0));
   MN_act();
   if(fld_need_remap) BM_remapfld();
   BM_clear(BM_PLR1|BM_PLR2|BM_MONSTER);
@@ -410,10 +434,19 @@ inter:
 #endif
 }
 
+obj_t *MN_getobj(int i);
+
 static void drawview(player_t *p) {
-  if(p->looky<-50) p->looky=-50;
-  else if(p->looky>50) p->looky=50;
-  w_x=p->o.x;w_y=p->o.y-12+p->looky;W_draw();PL_drawst(p);
+  obj_t *o;
+  if(p->looky<-w_ht/2) p->looky=-w_ht/2;
+  else if(p->looky>w_ht/2) p->looky=w_ht/2;
+  o=MN_getobj(p->mon);
+  if(o==NULL) {
+    w_x=p->o.x;w_y=p->o.y-12+p->looky;
+  } else {
+    w_x=o->x;w_y=o->y-o->h/2+p->looky;
+  }
+  W_draw();PL_drawst(p);
 }
 
 static int get_pu_st(int t) {
@@ -473,7 +506,7 @@ void G_draw(void) {
 	w_o=0;drawview(&pl1);
 	w_o=100;drawview(&pl2);
   }else{
-	w_o=50;drawview(&pl1);
+	w_o=0;drawview(&pl1);
   }
   if(g_trans) return;
   if(GM_draw()) {
@@ -488,9 +521,9 @@ void G_draw(void) {
   else if(pl1.pain<75) h=3;
   else if(pl1.pain<95) h=4;
   else h=5;
-  if(h) V_maptoscr(0,200,(_2pl)?1:51,98,clrmap+h*256);
-  else V_copytoscr(0,200,(_2pl)?1:51,98);
-  if(pl1.drawst) V_copytoscr(200,120,(_2pl)?0:50,100);
+  if(h) V_maptoscr(0,200,(_2pl)?1:1,w_ht,clrmap+h*256);
+  else V_copytoscr(0,200,(_2pl)?1:1,w_ht);
+  if(pl1.drawst) V_copytoscr(200,120,(_2pl)?0:0,100);
   pl1.drawst=0;
   if(_2pl) {
 	if(pl2.invl) h=get_pu_st(pl2.invl)*6;
@@ -500,8 +533,8 @@ void G_draw(void) {
     else if(pl2.pain<75) h=3;
     else if(pl2.pain<95) h=4;
     else h=5;
-    if(h) V_maptoscr(0,200,101,98,clrmap+h*256);
-    else V_copytoscr(0,200,101,98);
+    if(h) V_maptoscr(0,200,101,w_ht,clrmap+h*256);
+    else V_copytoscr(0,200,101,w_ht);
     if(pl2.drawst) V_copytoscr(200,120,100,100);
     pl2.drawst=0;
   }

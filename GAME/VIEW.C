@@ -20,7 +20,7 @@
 #define ANIT 5
 
 #define WD 200
-#define HT 98
+#define HT w_ht
 #define MAXX (FLDW*CELW-WD/2)
 #define MAXY (FLDH*CELH-HT/2)
 
@@ -29,6 +29,7 @@ extern map_block_t blk;
 extern byte clrmap[256*12];
 void V_remap_rect(int,int,int,int,byte *);
 
+int w_ht=198;
 byte w_horiz=ON;
 static void *horiz=NULL;
 int w_o,w_x,w_y,sky_type=1;
@@ -113,8 +114,8 @@ void W_draw(void) {
   W_adjust();
   V_setrect(0,WD,w_o+1,HT);
   if(w_horiz) {
-    V_pic(127-(word)(w_x-WD/2)*56U/(word)(MAXX-WD/2),
-	  w_o+123-(word)(w_y-HT/2)*28U/(word)(MAXY-HT/2),horiz);
+    V_pic(-(w_x-WD/2)*56/(MAXX-WD/2),
+     w_o-(_2pl?64:0)-(w_y-w_ht/2)*56/(MAXY-w_ht/2),horiz);
     if(sky_type==2) if(lt_time<0) {
       if(!lt_side) V_spr(0,w_o+lt_ypos,ltn[lt_type][(lt_time<-5)?0:1]);
       else V_spr2(WD-1,w_o+lt_ypos,ltn[lt_type][(lt_time<-5)?0:1]);

@@ -15,7 +15,7 @@
 #include "misc.h"
 
 #define WD 200
-#define HT 98
+#define HT w_ht
 
 #define MAX_YV 30
 
@@ -30,7 +30,12 @@ void V_manspr2(int,int,vgaimg *,char);
 
 extern void *walp[256];
 
-static void *sth[22],*bfh[160-'!'],*sfh[160-'!'],*bulsnd[2],*stone,*keys[3];
+#ifdef USE_LAYOUT_HACK
+#define keys miscc_keys
+extern void *sth[22],*bfh[160-'!'],*sfh[160-'!'],*bulsnd[2],*stone[2],*keys[3];
+#else
+static void *sth[22],*bfh[160-'!'],*sfh[160-'!'],*bulsnd[2],*stone[2],*keys[3];
+#endif
 static int prx=0,pry=0;
 
 int Z_sign(int a) {
@@ -85,7 +90,8 @@ void Z_initst(void) {
   };
 
 //  logo("  status");
-  stone=M_lock(F_getresid("STONE"));
+  stone[0]=M_lock(F_getresid("STONE"));
+  stone[1]=M_lock(F_getresid("STONE2"));
   keys[0]=M_lock(F_getresid("KEYRA0"));
   keys[1]=M_lock(F_getresid("KEYGA0"));
   keys[2]=M_lock(F_getresid("KEYBA0"));
@@ -176,12 +182,13 @@ void Z_drawspr(int x,int y,void *p,char d) {
 }
 
 void Z_clrst(void) {
-  V_pic(200,w_o,stone);
+  V_pic(200,w_o,stone[0]);
+  if(HT>100) V_pic(200,w_o+100,stone[1]);
 }
 
 void Z_drawstlives(char n) {
-  V_setrect(280,30,w_o,40);Z_clrst();
-  V_spr(285,w_o+17,sth[n]);
+//  V_setrect(280,30,w_o,40);Z_clrst();
+//  V_spr(285,w_o+17,sth[n]);
 }
 
 void Z_drawstkeys(byte k) {

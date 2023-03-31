@@ -126,11 +126,11 @@ void SMK_draw(void) {
   for(i=0;i<MAXSMOK;++i) if(sm[i].t) switch(sm[i].s) {
     case 0:
       if((s=sm[i].t)>=(SMSN-1)*3) s=0; else s=SMSN-1-s/3;
-      V_sprf((sm[i].x>>8)-w_x+100,(sm[i].y>>8)-w_y+50+w_o,spr[s],smoke_sprf);
+      V_sprf((sm[i].x>>8)-w_x+100,(sm[i].y>>8)-w_y+(w_ht/2)+1+w_o,spr[s],smoke_sprf);
       break;
     case 1:
       if((s=sm[i].t)>=(FLSN-1)) s=0; else s=FLSN-1-s;
-      V_sprf((sm[i].x>>8)-w_x+100,(sm[i].y>>8)-w_y+50+w_o,fspr[s],flame_sprf);
+      V_sprf((sm[i].x>>8)-w_x+100,(sm[i].y>>8)-w_y+(w_ht/2)+1+w_o,fspr[s],flame_sprf);
       break;
   }
 }

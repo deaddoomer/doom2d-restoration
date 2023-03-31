@@ -34,7 +34,7 @@ void load_game(int);
 void PL_reset(void);
 
 void V_manspr(int,int,void *,byte);
-void *PL_getspr(int c,int d);
+void *PL_getspr(int s,int d,void **wi,int *wx,int *wy);
 
 static byte panim[]=
   "BBDDAACCDDAABBDDAACCDDAABBDDAACCDDAAEEEEEFEFEFEFEFEFEFEFEFEFEEEEE";
@@ -46,16 +46,26 @@ byte pcolortab[PCOLORN]={
 };
 int p1color=5,p2color=4;
 
+#ifdef USE_LAYOUT_HACK
+extern byte ibuf[24];
+static byte input=0; // not extern
+extern int icur;
+#else
 static byte ibuf[24],input=0;
 static int icur;
+#endif
 
 enum{MENU,MSG};
 enum{CANCEL,NEWGAME,LOADGAME,SAVEGAME,OPTIONS,QUITGAME,QUIT,ENDGAME,ENDGM,
-  PLR1,PLR2,COOP,DM,VOLUME,GAMMA,LOAD,SAVE,PLCOLOR,PLCEND,MUSIC,INTERP,
+  PLR1,PLR2,COOP,DM,BM,VOLUME,GAMMA,LOAD,SAVE,PLCOLOR,PLCEND,MUSIC,INTERP,
   SVOLM,SVOLP,MVOLM,MVOLP,GAMMAM,GAMMAP,PL1CM,PL1CP,PL2CM,PL2CP};
 
 #ifndef DEMO
+#ifdef USE_LAYOUT_HACK
+extern int qsnd[QSND_NUM];
+#else
 static int qsnd[QSND_NUM];
+#endif
 #endif
 
 static char *main_txt[]={
@@ -65,7 +75,7 @@ static char *main_txt[]={
 },*ngplr_txt[]={
   "Ž„ˆ ˆƒŽŠ","„‚€ ˆƒŽŠ€"
 },*ngdm_txt[]={
-  "COOPERATIVE","DEATHMATCH"
+  "COOPERATIVE","DEATHMATCH","BOTMATCH"
 },*vol_txt[]={
   "‡‚“Š","Œ“‡›Š€"
 },*plcolor_txt[]={
@@ -79,7 +89,7 @@ static byte main_typ[]={
 },ngplr_typ[]={
   PLR1,PLR2
 },ngdm_typ[]={
-  COOP,DM
+  COOP,DM,BM
 },opt_typ[]={
   ENDGAME,VOLUME,GAMMA,MUSIC,INTERP
 },quit_typ[]={
@@ -133,10 +143,17 @@ static menu_t *mnu=NULL;
 static byte gm_redraw=0;
 static int gm_tm=0;
 short lastkey=0;
+#ifdef USE_LAYOUT_HACK
+extern void *csnd1,*csnd2,*msnd1,*msnd2,*msnd3,*msnd4,*msnd5,*msnd6;
+static int movsndt=0; // not extern
+extern vgaimg *msklh[2],*mbarl,*mbarm,*mbarr,*mbaro,*mslotl,*mslotm,*mslotr;
+extern byte cbuf[32];
+#else
 static void *csnd1,*csnd2,*msnd1,*msnd2,*msnd3,*msnd4,*msnd5,*msnd6;
 static int movsndt=0;
 static vgaimg *msklh[2],*mbarl,*mbarm,*mbarr,*mbaro,*mslotl,*mslotm,*mslotr;
 static byte cbuf[32];
+#endif
 
 static snd_t *voc=NULL;
 static int voc_ch=0;
@@ -212,7 +229,7 @@ void GM_set(menu_t *m) {
   if(g_st==GS_GAME) {
 	V_setrect(0,320,0,200);V_clr(0,320,0,200,0);
 	if(_2pl) {V_setrect(200,120,0,200);w_o=0;Z_clrst();w_o=100;Z_clrst();}
-	else {V_setrect(200,120,50,100);w_o=50;Z_clrst();}
+	else {V_setrect(200,120,0,200);w_o=0;Z_clrst();}
 	pl1.drawst=pl2.drawst=0xFF;V_setrect(0,320,0,200);
   }
 }
@@ -243,13 +260,15 @@ void GM_command(int c) {
     case PLR1:
       GMV_say("_1PLAYER");
       ngdm_mnu.cur=0;
-    case COOP: case DM:
+    case COOP: case DM: case BM:
       if(c==COOP) GMV_say("_COOP");
       else if(c==DM) GMV_say("_DM");
       if(c!=PLR1) {GM_set(&plcolor_mnu);break;}
     case PLCEND:
       _2pl=ngplr_mnu.cur;
-      g_dm=ngdm_mnu.cur;
+      w_ht=_2pl?98:198;
+      g_dm=ngdm_mnu.cur!=0;
+      g_bot=ngdm_mnu.cur==2;
       g_map=(_warp)?_warp:1;
       PL_reset();
       if(_2pl) {
@@ -462,8 +481,10 @@ int GM_act(void) {
   return((mnu)?1:0);
 }
 
-void G_keyf(short k) {
+void G_keyf(short k,short pressed) {
   int i;
+
+  if(!pressed) return;
 
   lastkey=k;
   if(!_2pl || cheat) {
@@ -537,8 +558,12 @@ int GM_draw(void) {
 	  }else if(mnu->t[i]==INTERP) {
 	    Z_printbf("%s",s_interp?"‚Š‹":"‚›Š‹");
 	  }else if(mnu->t[i]>=PL1CM) {
+	    int wx,wy;
+	    void *wi,*img;
+	    img=PL_getspr(*panimp,0,&wi,&wx,&wy);
+	    V_spr(mnu->x+((mnu->t[i]==PL1CM)?15:35)+wx,y+i*16+20+14+wy,wi);
 	    V_manspr(mnu->x+((mnu->t[i]==PL1CM)?15:35),y+i*16+20+14,
-	      PL_getspr(*panimp,0),
+	      img,
 	      pcolortab[(mnu->t[i]==PL1CM)?p1color:p2color]
 	    );
 	  }else if(mnu->t[i]>=SVOLM) {

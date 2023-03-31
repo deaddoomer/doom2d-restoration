@@ -177,7 +177,7 @@ void WP_act(void) {
 		if(st&Z_HITAIR) Z_set_speed(&wp[i].o,16);
 		if(st&(Z_HITWALL|Z_HITCEIL|Z_HITLAND))
 		  {wp[i].s=2;wp[i].o.xv=wp[i].o.yv=0;Z_sound(snd[7],128);break;}
-		else if(Z_hit(&wp[i].o,(wp[i].t==BALL7 || wp[i].t==MANF)?40:((wp[i].t==BALL2)?20:5),wp[i].own,HIT_SOME))
+		else if(Z_hit(&wp[i].o,(wp[i].t==BALL7 || wp[i].t==MANF)?40:((wp[i].t==BALL2)?20:((g_dm)?15:5)),wp[i].own,HIT_SOME))
 		  {wp[i].s=2;wp[i].o.xv=wp[i].o.yv=0;Z_sound(snd[7],128);break;}
 		wp[i].s^=1;break;
 	  case BFGBALL:

@@ -50,9 +50,10 @@ void G_act(void);
 void G_draw(void);
 
 extern byte walswp[256];
-extern byte _2pl,g_dm,g_st,g_exit,w_horiz,g_map;
+extern byte g_bot,_2pl,g_dm,g_st,g_exit,w_horiz,g_map;
 extern int g_sttm;
 extern dword g_time;
+extern int w_ht;
 extern int w_o,w_x,w_y;
 extern byte fldb[FLDH][FLDW];
 extern byte fldf[FLDH][FLDW];

@@ -82,11 +82,16 @@ proc KeyDriver
 @@1:    cmp al,[keys+ebx]
 	je @@end
 	mov [keys+ebx],al
-	or al,al
-	jz @@end
-	push ecx edx esi edi ebp es fs gs bx
+;       or al,al
+;       jz @@end
+	push ecx edx esi edi ebp es fs gs
+	movzx eax,al
+	push eax
+	push ebx
+	cld
 	call [key_proc]
-	pop ax gs fs es ebp edi esi edx ecx
+	pop eax eax
+	pop gs fs es ebp edi esi edx ecx
 	jmp @@end
 @@spec: mov [spec],1
 @@end:  mov al,20h

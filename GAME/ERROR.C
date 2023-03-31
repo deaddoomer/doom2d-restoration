@@ -55,7 +55,7 @@ void ERR_quit(void) {
 
   V_done();
   if(!(p=malloc(4000)))
-    puts("Спасибо за то, что вы играли в Операцию \"Смятка\"!");
+    puts("Спасибо за то, что вы играли в Doom2D!");
   else {
     F_loadres(F_getresid("ENDOOM"),p,0,4000);
     memcpy((void*)0xB8000,p,4000);free(p);gotoxy(1,24);

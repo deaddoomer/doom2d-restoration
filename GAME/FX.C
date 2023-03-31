@@ -149,7 +149,7 @@ void FX_draw(void) {
       case TFOG: s=fx[i].s/2;break;
 	  case IFOG: s=fx[i].s/2+10;break;
 	  case BUBL:
-		V_dot((fx[i].x>>8)-w_x+100,(fx[i].y>>8)-w_y+50+w_o,0xC0+fx[i].s);
+		V_dot((fx[i].x>>8)-w_x+100,(fx[i].y>>8)-w_y+(w_ht/2)+1+w_o,fx[i].s+0xC0);
 		continue;
     }
     if(s>=0) Z_drawspr(fx[i].x,fx[i].y,spr[s],sprd[s]);

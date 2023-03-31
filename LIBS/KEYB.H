@@ -20,7 +20,7 @@ extern "C" {
 #endif
 
 // тип функции обработки клавиш
-typedef void key_f(short k);
+typedef void key_f(int k,int pressed);
 
 #ifndef __NT__
 // включить драйвер

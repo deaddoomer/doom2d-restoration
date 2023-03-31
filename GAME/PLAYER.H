@@ -15,9 +15,8 @@
 #define PLK_F  16
 #define PLK_J  32
 #define PLK_P  64
-#define PLK_W  128
-#define PLK_WL 1
-#define PLK_WR 2
+#define PLK_WL 128
+#define PLK_WR 256
 
 #define PLF_FIRE  1
 #define PLF_PNSND 2
@@ -46,6 +45,7 @@ typedef struct{
   int id;
   byte keys;
   char lives;
+  int mon;
 }player_t;
 
 void PL_init(void);
@@ -53,7 +53,7 @@ void PL_alloc(void);
 void PL_spawn(player_t *,int,int,char);
 int PL_hit(player_t *,int,int,int);
 int PL_isdead(player_t *);
-void PL_act(player_t *);
+void PL_act(player_t *,int);
 void PL_draw(player_t *);
 void PL_drawst(player_t *);
 void PL_cry(player_t *);

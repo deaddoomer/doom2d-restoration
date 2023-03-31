@@ -23,6 +23,7 @@ extrn bright:byte,mixmap:byte,flametab:byte
 extrn fld:byte,bmap:byte,fld_need_remap:byte,clrmap:byte
 extrn walp:dword,walf:dword
 extrn w_o:dword,w_x:dword,w_y:dword
+extrn w_ht:dword;
 
 dpmi_mem_info dd ?
 	db 44 dup(?)
@@ -199,8 +200,10 @@ public Z_drawfld
 	mov [__sx],eax
 	add eax,MAXTXW+WD/8+1
 	mov [__ex],eax
-	mov eax,[w_y]
-	sub eax,HT/2
+	mov eax,[w_ht]
+	shr eax,1
+	neg eax
+	add eax,[w_y]
 	mov edx,eax
 	and edx,7
 	neg edx
@@ -211,7 +214,10 @@ public Z_drawfld
 	shr eax,3
 	add eax,1-MAXTXH
 	mov [__sy],eax
-	add eax,MAXTXH+HT/8+1
+	mov eax,[w_ht]
+	shr eax,3
+	add eax,9
+	add eax,[__sy]
 	mov [__ey],eax
 	mov eax,FLDW
 	mul [__sy]

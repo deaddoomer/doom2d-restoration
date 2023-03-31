@@ -127,7 +127,7 @@ void DOT_draw(void) {
   int i;
 
   for(i=0;i<MAXDOT;++i)
-    if(dot[i].t) V_dot(dot[i].o.x-w_x+100,dot[i].o.y-w_y+50+w_o,dot[i].c);
+    if(dot[i].t) V_dot(dot[i].o.x-w_x+100,dot[i].o.y-w_y+(w_ht/2)+1+w_o,dot[i].c);
 }
 
 void DOT_add(int x,int y,char xv,char yv,byte c,byte t) {
