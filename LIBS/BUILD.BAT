@@ -1,9 +1,19 @@
-@CD .\AV
+@CD   AV
 @CALL BUILD.BAT
-@CD ..\VGA
+@CD   ..
+
+@CD   VGA
 @CALL BUILD.BAT
-@CD ..\SOUND
+@CD   ..
+
+@CD   SOUND
 @CALL BUILD.BAT
-@CD ..\SNDDRV
+@CD   ..
+
+@CD   SNDDRV
 @CALL BUILD.BAT
-@CD ..
+@CD   ..
+
+@CD   GUI
+@CALL BUILD.BAT
+@CD   ..
