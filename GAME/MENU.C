@@ -16,8 +16,6 @@
 
 void Z_clrst(void);
 
-void F_nextmus(char*);
-
 #define QSND_NUM 14
 
 enum{HIT100,ARMOR,JUMP,WPNS,IMMORTAL,SPEED,OPEN,EXIT};
@@ -36,23 +34,13 @@ void PL_reset(void);
 void V_manspr(int,int,void *,byte);
 void *PL_getspr(int c,int d);
 
-static byte panim[]=
-  "BBDDAACCDDAABBDDAACCDDAABBDDAACCDDAAEEEEEFEFEFEFEFEFEFEFEFEFEEEEE";
-static byte *panimp=panim;
-
-#define PCOLORN 10
-byte pcolortab[PCOLORN]={
-  0x18,0x20,0x40,0x58,0x60,0x70,0x80,0xB0,0xC0,0xD0
-};
-int p1color=5,p2color=4;
-
 static byte ibuf[24],input=0;
 static int icur;
 
 enum{MENU,MSG};
 enum{CANCEL,NEWGAME,LOADGAME,SAVEGAME,OPTIONS,QUITGAME,QUIT,ENDGAME,ENDGM,
-  PLR1,PLR2,COOP,DM,VOLUME,GAMMA,LOAD,SAVE,PLCOLOR,PLCEND,MUSIC,INTERP,
-  SVOLM,SVOLP,MVOLM,MVOLP,GAMMAM,GAMMAP,PL1CM,PL1CP,PL2CM,PL2CP};
+  PLR1,PLR2,COOP,DM,VOLUME,GAMMA,LOAD,SAVE,SVOLM,SVOLP,MVOLM,MVOLP,
+  GAMMAM,GAMMAP};
 
 #ifndef DEMO
 static int qsnd[QSND_NUM];
@@ -61,15 +49,13 @@ static int qsnd[QSND_NUM];
 static char *main_txt[]={
   "Ž‚€Ÿ ˆƒ€","‘’€€Ÿ ˆƒ€","‘Ž•€ˆ’œ ˆƒ“","€‡Ž…","‚›•Ž„"
 },*opt_txt[]={
-  "€—€’œ ‡€Ž‚Ž","ƒŽŒŠŽ‘’œ","ŸŠŽ‘’œ","Œ“‡›Š€","ˆ’…Ž‹Ÿ–ˆŸ:"
+  "€—€’œ ‡€Ž‚Ž","ƒŽŒŠŽ‘’œ","ŸŠŽ‘’œ"
 },*ngplr_txt[]={
   "Ž„ˆ ˆƒŽŠ","„‚€ ˆƒŽŠ€"
 },*ngdm_txt[]={
   "COOPERATIVE","DEATHMATCH"
 },*vol_txt[]={
   "‡‚“Š","Œ“‡›Š€"
-},*plcolor_txt[]={
-  "…‚›‰","‚’ŽŽ‰"
 },*gamma_txt[]={
   ""
 };
@@ -81,15 +67,13 @@ static byte main_typ[]={
 },ngdm_typ[]={
   COOP,DM
 },opt_typ[]={
-  ENDGAME,VOLUME,GAMMA,MUSIC,INTERP
+  ENDGAME,VOLUME,GAMMA
 },quit_typ[]={
   QUIT,CANCEL
 },endgm_typ[]={
   ENDGM,CANCEL
 },vol_typ[]={
   SVOLM,MVOLM
-},plcolor_typ[]={
-  PL1CM,PL2CM
 },gamma_typ[]={
   GAMMAM
 },load_typ[]={
@@ -101,15 +85,13 @@ static byte main_typ[]={
 static menu_t main_mnu={
   MENU,5,0,80,"Œ…ž",main_txt,main_typ
 },opt_mnu={
-  MENU,5,0,75,"€‡Ž…",opt_txt,opt_typ
+  MENU,3,0,75,"€‡Ž…",opt_txt,opt_typ
 },ngplr_mnu={
   MENU,2,0,90,"Ž‚€Ÿ ˆƒ€",ngplr_txt,ngplr_typ
 },ngdm_mnu={
   MENU,2,0,90,"’ˆ ˆƒ›",ngdm_txt,ngdm_typ
 },vol_mnu={
   MENU,2,0,40,"ƒŽŒŠŽ‘’œ",vol_txt,vol_typ
-},plcolor_mnu={
-  MENU,2,0,90,"–‚…’",plcolor_txt,plcolor_typ
 },gamma_mnu={
   MENU,1,0,85,"ŸŠŽ‘’œ",gamma_txt,gamma_typ
 },load_mnu={
@@ -117,11 +99,11 @@ static menu_t main_mnu={
 },save_mnu={
   MENU,7,0,85,"‘Ž•€ˆ’œ ˆƒ“",NULL,save_typ
 },quit1_msg={
-  MSG,0,0,0,"‚› „“Œ€…’…, Ž’‘ž„€ ’€Š Ž‘’Ž ‚›‰’ˆ?",NULL,quit_typ
+  MSG,0,0,0,"‚› „“Œ€…’…, ’€Š Ž‘’Ž ‚›‰’ˆ ˆ‡ DOOM'€ 2D?",NULL,quit_typ
 },quit2_msg={
-  MSG,0,0,0,"•ŽŽ˜…œŠŽ Ž„“Œ€‰’… ……„ ’…Œ Š€Š ‚›‰’ˆ",NULL,quit_typ
+  MSG,0,0,0,"•ŽŽ˜…œŠŽ ŽDOOM€‰’… ……„ ’…Œ Š€Š ‚›‰’ˆ",NULL,quit_typ
 },quit3_msg={
-  MSG,0,0,0,"“ ‚€‘ —’Ž, ŠŽ—ˆ‹ˆ‘œ €’Ž›?",NULL,quit_typ
+  MSG,0,0,0,"DOOM2D ‹“—™… WINDOWS'95 ˆ OS/2 ‚Œ…‘’… ‚‡Ÿ’›•?",NULL,quit_typ
 },endgm_msg={
   MSG,0,0,0,"€—€’œ ’Ž’ “Ž‚…œ ‡€Ž‚Ž?",NULL,endgm_typ
 };
@@ -133,36 +115,9 @@ static menu_t *mnu=NULL;
 static byte gm_redraw=0;
 static int gm_tm=0;
 short lastkey=0;
-static void *csnd1,*csnd2,*msnd1,*msnd2,*msnd3,*msnd4,*msnd5,*msnd6;
-static int movsndt=0;
+static void *csnd1,*csnd2,*msnd1,*msnd2,*msnd3,*msnd4,*msnd5;
 static vgaimg *msklh[2],*mbarl,*mbarm,*mbarr,*mbaro,*mslotl,*mslotm,*mslotr;
 static byte cbuf[32];
-
-static snd_t *voc=NULL;
-static int voc_ch=0;
-
-void GMV_stop(void) {
-  if(voc) {
-    if(voc_ch) {S_stop(voc_ch);voc_ch=0;}
-    free(voc);voc=NULL;
-  }
-}
-
-void GMV_say(char *nm) {
-  int r,len;
-  snd_t *p;
-  byte *d;
-
-  if((r=F_findres(nm))==-1) return;
-  if(!(p=malloc((len=F_getreslen(r))+16))) return;
-  p->len=len;p->rate=11000;
-  p->lstart=p->llen=0;
-  GMV_stop();
-  F_loadres(r,p+1,0,len);
-  for(d=(byte*)(p+1);len;--len,++d) *d^=128;
-  voc=p;
-  voc_ch=S_play(voc,-1,1024,255);
-}
 
 void G_code(void) {
   void *s;
@@ -180,18 +135,16 @@ void G_code(void) {
   }else if(memcmp(cbuf+32-8,"\x21\x18\x13\x32\x16\x26\x1E\x02",8)==0) {
     PL_RUN=(PL_RUN==8)?24:8;
   }else if(memcmp(cbuf+32-5,"\x13\x1E\x32\x30\x18",5)==0) {
-    pl1.ammo=pl1.shel=pl1.rock=pl1.cell=pl1.fuel=30000;
-    pl1.wpns=0x7FF;pl1.drawst|=PL_DRAWWPN|PL_DRAWKEYS;
+    pl1.ammo=pl1.shel=pl1.rock=pl1.cell/*=pl1.fuel*/=30000;
+    pl1.wpns=0x3FF;pl1.drawst|=PL_DRAWWPN|PL_DRAWKEYS;
     pl1.keys=0x70;
     if(_2pl) {
-      pl2.ammo=pl2.shel=pl2.rock=pl2.cell=pl1.fuel=30000;
-      pl2.wpns=0x7FF;pl2.drawst|=PL_DRAWWPN|PL_DRAWKEYS;
+      pl2.ammo=pl2.shel=pl2.rock=pl2.cell/*=pl1.fuel*/=30000;
+      pl2.wpns=0x3FF;pl2.drawst|=PL_DRAWWPN|PL_DRAWKEYS;
       pl2.keys=0x70;
     }
   }else if(memcmp(cbuf+32-5,"\x16\x24\x23\x14\x11",5)==0) {
     p_immortal=!p_immortal;
-  }else if(memcmp(cbuf+32-9,"\x33\x14\x25\x1F\x10\x24\x23\x14\x25",9)==0) {
-    p_fly=!p_fly;
   }else if(memcmp(cbuf+32-6,"\x2E\x30\x2F\x2E\x30\x2F",6)==0) {
     SW_cheat_open();
   }else if(memcmp(cbuf+32-7,"\x22\x18\x18\x20\x30\x15\x12",7)==0) {
@@ -223,50 +176,25 @@ void GM_command(int c) {
   switch(c) {
     case CANCEL:
       GM_set(NULL);break;
-    case INTERP:
-      s_interp=!s_interp;
-      GM_set(mnu);
-      break;
-    case MUSIC:
-      F_freemus();
-      F_nextmus(g_music);
-      F_loadmus(g_music);
-      S_startmusic();
-      GM_set(mnu);
-      break;
     case NEWGAME:
-      GMV_say("_NEWGAME");
       GM_set(&ngplr_mnu);break;
     case PLR2:
-      GMV_say("_2PLAYER");
       GM_set(&ngdm_mnu);break;
     case PLR1:
-      GMV_say("_1PLAYER");
       ngdm_mnu.cur=0;
     case COOP: case DM:
-      if(c==COOP) GMV_say("_COOP");
-      else if(c==DM) GMV_say("_DM");
-      if(c!=PLR1) {GM_set(&plcolor_mnu);break;}
-    case PLCEND:
       _2pl=ngplr_mnu.cur;
       g_dm=ngdm_mnu.cur;
       g_map=(_warp)?_warp:1;
       PL_reset();
-      if(_2pl) {
-        pl1.color=pcolortab[p1color];
-        pl2.color=pcolortab[p2color];
-      }else pl1.color=0x70;
       G_start();
       GM_set(NULL);break;
     case OPTIONS:
-      GMV_say("_RAZNOE");
       GM_set(&opt_mnu);break;
     case LOADGAME:
-      GMV_say("_OLDGAME");
       F_getsavnames();GM_set(&load_mnu);break;
     case SAVEGAME:
       if(g_st!=GS_GAME) break;
-      GMV_say("_SAVEGAM");
       F_getsavnames();GM_set(&save_mnu);break;
     case SAVE:
 	  input=1;memcpy(ibuf,savname[save_mnu.cur],24);icur=strlen(ibuf);
@@ -276,21 +204,16 @@ void GM_command(int c) {
 	  load_game(load_mnu.cur);
 	  GM_set(NULL);break;
 	case VOLUME:
-	  GMV_say("_VOLUME");
 	  GM_set(&vol_mnu);break;
 	case GAMMA:
-	  GMV_say("_GAMMA");
 	  GM_set(&gamma_mnu);break;
 	case QUITGAME:
-	  GMV_say((rand()&1)?"_EXIT1":"_EXIT2");
 	  GM_set(qmsg[random(3)]);break;
 	case ENDGAME:
 	  if(g_st!=GS_GAME) break;
-	  GMV_say("_RESTART");
 	  GM_set(&endgm_msg);break;
 	case QUIT:
 	  F_freemus();
-	  GMV_stop();
 #ifndef DEMO
 	  for(c=(Z_sound(M_lock(qsnd[random(QSND_NUM)]),256)+9)<<16,timer=0;timer<c;);
 #endif
@@ -298,14 +221,6 @@ void GM_command(int c) {
     case ENDGM:
 	  PL_reset();G_start();
 	  GM_set(NULL);break;
-	case PL1CM:
-	  if(--p1color<0) p1color=PCOLORN-1; break;
-	case PL1CP:
-	  if(++p1color>=PCOLORN) p1color=0; break;
-	case PL2CM:
-	  if(--p2color<0) p2color=PCOLORN-1; break;
-	case PL2CP:
-	  if(++p2color>=PCOLORN) p2color=0; break;
 	case SVOLM:
 	  if((snd_vol-=8)<0) snd_vol=0; break;
 	case SVOLP:
@@ -361,16 +276,6 @@ static void shot(void) {
 int GM_act(void) {
   byte c;
 
-  if(mnu==&plcolor_mnu) {
-    if(*(++panimp)==0) panimp=panim;
-    GM_set(mnu);
-  }
-  if(movsndt>0) --movsndt; else movsndt=0;
-  if(g_st==GS_TITLE) if(!mnu) if(lastkey) {
-    GM_set(&main_mnu);Z_sound(msnd3,128);
-    lastkey=0;
-    return 1;
-  }
   if(input) switch(lastkey) {
     case 0x1C: case 0x9C:
       F_savegame(save_mnu.cur,ibuf);
@@ -390,12 +295,10 @@ int GM_act(void) {
     case 0x57:
       if(mnu) break;
       Z_sound(msnd3,128);
-      GMV_say("_GAMMA");
       GM_set(&gamma_mnu);break;
     case 0x3E:
       if(mnu) break;
       Z_sound(msnd3,128);
-      GMV_say("_VOLUME");
       GM_set(&vol_mnu);break;
     case 0x3C:
       if(mnu) break;
@@ -428,16 +331,11 @@ int GM_act(void) {
 	  if(mnu->t[mnu->cur]<SVOLM) break;
 	  GM_command(mnu->t[mnu->cur]+((lastkey==0x4B || lastkey==0xCB)?0:1));
 	  GM_set(mnu);
-	  if(!movsndt) movsndt=Z_sound((lastkey==0x4B || lastkey==0xCB)?msnd5:msnd6,255);
+	  Z_sound(msnd5,128);
 	  break;
     case 0x1C: case 0x39: case 0x9C:
 	  if(!mnu) break;
 	  if(mnu->type!=MENU) break;
-	  if(mnu->t[mnu->cur]>=PL1CM) {
-	    Z_sound(msnd2,128);
-	    GM_command(PLCEND);
-	    break;
-	  }
 	  if(mnu->t[mnu->cur]>=SVOLM) break;
 	  Z_sound(msnd2,128);
 	  GM_command(mnu->t[mnu->cur]);
@@ -493,8 +391,7 @@ void GM_init(void) {
   msnd2=Z_getsnd("PISTOL");
   msnd3=Z_getsnd("SWTCHN");
   msnd4=Z_getsnd("SWTCHX");
-  msnd5=Z_getsnd("SUDI");
-  msnd6=Z_getsnd("TUDI");
+  msnd5=Z_getsnd("STNMOV");
   msklh[0]=M_lock(F_getresid("M_SKULL1"));
 //  msklh[0]=load_vga("vga\\spr.vga","M_SKULL1");
   msklh[1]=M_lock(F_getresid("M_SKULL2"));
@@ -529,19 +426,10 @@ int GM_draw(void) {
 		if(input && i==save_mnu.cur) Z_printsf("%s_",ibuf);
 		else Z_printsf("%s",savname[i]);
 	  }else{
-	    Z_gotoxy(mnu->x+((mnu->t[i]>=SVOLM)?((mnu->t[i]>=PL1CM)?50:152):0),y+i*16+20);
+	    Z_gotoxy(mnu->x+((mnu->t[i]>=SVOLM)?152:0),y+i*16+20);
 	    Z_printbf(mnu->m[i]);
 	  }
-	  if(mnu->t[i]==MUSIC) {
-	    Z_printbf(" '%.8s'",g_music);
-	  }else if(mnu->t[i]==INTERP) {
-	    Z_printbf("%s",s_interp?"‚Š‹":"‚›Š‹");
-	  }else if(mnu->t[i]>=PL1CM) {
-	    V_manspr(mnu->x+((mnu->t[i]==PL1CM)?15:35),y+i*16+20+14,
-	      PL_getspr(*panimp,0),
-	      pcolortab[(mnu->t[i]==PL1CM)?p1color:p2color]
-	    );
-	  }else if(mnu->t[i]>=SVOLM) {
+	  if(mnu->t[i]>=SVOLM) {
 		V_spr(mnu->x,j=y+i*16+20,mbarl);
 		for(k=8;k<144;k+=8)
 		  V_spr(mnu->x+k,j,mbarm);

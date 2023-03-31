@@ -17,9 +17,8 @@ public note_tab
 
 snd_vol dw 128
 mus_vol dw 64
-s_interp db 0
 
-public snd_vol,mus_vol,s_interp
+public snd_vol,mus_vol
 
 sfreq dw 11025
 
@@ -51,8 +50,6 @@ mcnt dw ?
 
 curseq db ?
 playst db ?
-
-iptab db 8192 dup(?)
 
 irate dd MAXI dup(?)
 ilen dd MAXI dup(?)
@@ -91,12 +88,12 @@ public S_play
 	ret
 @@over:
 	mov esi,8*4
-	mov eax,[ilen+esi]
+	mov ax,[word ilen+esi]
 	mov ebx,9*4
-@@3:	cmp [ilen+ebx],eax
+@@3:	cmp [word ilen+ebx],ax
 	ja @@3a
 	mov esi,ebx
-	mov eax,[ilen+ebx]
+	mov ax,[word ilen+ebx]
 @@3a:	add ebx,4
 	cmp ebx,MAXI*4
 	jb @@3
@@ -105,16 +102,16 @@ public S_play
 	shl esi,2
 @@1x:	cli
 	mov ebx,[@@p]
-	mov eax,[ebx]
-	mov [ilen+esi],eax
-	mov eax,[ebx+8]
+	mov ax,[word ebx]
+	mov [word ilen+esi],ax
+	movzx eax,[word ebx+4]
 	mov [ilpofs+esi],eax
-	mov eax,[ebx+12]
-	mov [ilplen+esi],eax
+	mov ax,[word ebx+6]
+	mov [word ilplen+esi],ax
 	mov ax,[snd_vol]
 	mul [word @@v]
 	mov [byte ivol+esi],ah
-	mov eax,[ebx+4]
+	mov ax,[word ebx+2]
 	mul [word @@r]
 	shr dx,1
 	rcr ah,1
@@ -129,9 +126,9 @@ public S_play
 	jae @@2b
 	mov ax,2000
 @@2b:	mov [word irate+esi],ax
-	add ebx,16
+	add ebx,8
 	mov [iofs+esi],ebx
-	add [ilpofs+esi],ebx
+	mov [ilpofs+esi],ebx
 	mov [word ierr+esi],0
 	shr esi,2
 	sub esi,7
@@ -187,14 +184,14 @@ public S_setvolume
 endp
 
 proc getsample near
-	xor edi,edi
+	xor di,di
 	cmp [snd_vol],0
 	jne @@go
 	cmp [mus_vol],0
 	jne @@go0
-	xor eax,eax
+	mov al,128
 	ret
-@@nom:	xor edi,edi
+@@nom:	xor di,di
 	mov esi,8*4
 	jmp @@g2
 @@go:
@@ -205,10 +202,10 @@ proc getsample near
 	mov ax,[mfreq]
 	mov [mcnt],ax
 	call near playnext
-	xor edi,edi
+	xor di,di
 @@g1:	xor esi,esi
 @@g2:	mov bp,[sfreq]
-@@1:	movzx eax,[word irate+esi]
+@@1:	mov ax,[word irate+esi]
 	or ax,ax
 	jz @@1z
 	add ax,[word ierr+esi]
@@ -217,11 +214,11 @@ proc getsample near
 	jb @@1b
 @@1a:	sub ax,bp
 	inc [iofs+esi]
-	dec [ilen+esi]
+	dec [word ilen+esi]
 	jnz @@1c
-	mov ecx,[ilplen+esi]
-	jecxz @@1d
-	mov [ilen+esi],ecx
+	mov cx,[word ilplen+esi]
+	jcxz @@1d
+	mov [word ilen+esi],cx
 	mov edx,[ilpofs+esi]
 	mov [iofs+esi],edx
 	jmp @@1c
@@ -230,64 +227,33 @@ proc getsample near
 @@1c:	cmp ax,bp
 	jae @@1a
 @@1b:	mov [word ierr+esi],ax
-	cmp [s_interp],0
-	je @@noip
-	shr ax,3
-	movzx eax,[iptab+eax]
-	mov ecx,eax
-	mul [byte ivol+esi]
-	xchg eax,ecx
-	not al
-	mul [byte ivol+esi]
 	mov ebx,[iofs+esi]
-	movsx edx,[byte ebx]
-	imul edx
-	xchg eax,ecx
-
-	cmp [ilen+esi],1
-	jne @@ip2
-	cmp [ilplen+esi],0
-	jne @@ip3
-	mov eax,ecx
-	jmp @@ip1
-@@ip3:
-	mov ebx,[ilpofs+esi]
-	movsx ebx,[byte ebx]
-	imul ebx
-	add eax,ecx
-	jmp @@ip1
-@@ip2:
-	movsx ebx,[byte ebx+1]
-	imul ebx
-	add eax,ecx
-@@ip1:
-	sar eax,8
-	add edi,eax
-	jmp @@1z
-@@noip:	mov ebx,[iofs+esi]
 	mov al,[ebx]
 	imul [byte ivol+esi]
-	movsx eax,ax
-	add edi,eax
+	mov al,ah
+	cbw
+	add di,ax
 @@1z:	add esi,4
 	cmp esi,8*4
 	je @@1zz
 	cmp esi,MAXI*4
 	jb @@1
-	cmp edi,32767
-	jl @@aa
-	mov eax,32767
+	cmp di,127
+	jle @@aa
+	mov al,255
 	ret
-@@aa:	cmp di,-32768
-	jg @@bb
-	mov eax,-32768
+@@aa:	cmp di,-128
+	jge @@bb
+	xor al,al
 	ret
-@@bb:	mov eax,edi
+@@bb:	mov ax,di
+	xor al,128
 	ret
-@@1zz:	movzx eax,[mus_vol]
-	imul edi
-	sar eax,8
-	mov edi,eax
+@@1zz:	mov ax,[mus_vol]
+	imul di
+	mov al,ah
+	mov ah,dl
+	mov di,ax
 	jmp @@1
 endp
 
@@ -378,7 +344,7 @@ proc playnext near
 	shl ebx,1
 	mov ax,[note_tab+ebx]
 	mov ebx,[ciofs+esi]
-	mul [word ebx+4]
+	mul [word ebx+2]
 	shr dx,1
 	rcr ah,1
 	shr dx,1
@@ -394,13 +360,13 @@ proc playnext near
 @@2b:
 	mov [word irate+esi],ax
 	mov [word ierr+esi],0
-	mov eax,[ebx]
-	mov [ilen+esi],eax
-	mov eax,[ebx+8]
+	mov ax,[word ebx]
+	mov [word ilen+esi],ax
+	movzx eax,[word ebx+4]
 	mov [ilpofs+esi],eax
-	mov eax,[ebx+12]
-	mov [ilplen+esi],eax
-	add ebx,16
+	mov ax,[word ebx+6]
+	mov [word ilplen+esi], ax
+	add ebx,8
 	mov [iofs+esi],ebx
 	add [ilpofs+esi],ebx
 @@2:
@@ -470,22 +436,11 @@ proc mapdma
 	mov ax,DGROUP
 	mov ds,ax
 	cld
-	test [snd_type],2
-	jnz @@2
 @@1:	push ecx edi
 	call getsample
 	pop edi ecx
-	mov al,ah
-	xor al,128
 	stosb
 	loop @@1
-	ret
-@@2:	push ecx edi
-	call getsample
-	pop edi ecx
-	xor ah,80h
-	stosw
-	loop @@2
 	ret
 endp
 
@@ -494,10 +449,6 @@ proc timeproc uses eax ebx ecx edx esi edi ds es
 	mov ax,DGROUP
 	mov ds,ax
 	call getsample
-	xor ah,128
-	test [snd_type],2
-	jnz @@1
-	mov al,ah
 @@1:	call [snd_tp]
 	pop ebp
 	ret
@@ -510,17 +461,6 @@ public S_init
 	jne @@ex
 	cmp [snd_type],-1
 	je @@ex
-
-	xor ebx,ebx
-	lea edi,[iptab]
-@@l1:	mov ax,255
-	mul bx
-	div [sfreq]
-	mov [byte edi],al
-	inc edi
-	add ebx,8
-	cmp bx,[sfreq]
-	jbe @@l1
 
 	push ds
 	pop es

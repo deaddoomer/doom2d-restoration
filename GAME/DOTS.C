@@ -23,8 +23,6 @@
 #define SP_MINT 5
 #define SP_MAXT 7
 
-extern byte z_dot;
-
 typedef struct{
   obj_t o;
   byte c,t;
@@ -38,7 +36,6 @@ typedef struct{
 static dot_t dot[MAXDOT];
 static init_t bl_ini[MAXINI],sp_ini[MAXINI];
 static int bl_r,sp_r,sr_r,sxr[MAXSR],syr[MAXSR];
-static int ldot;
 
 void DOT_savegame(int h) {
   int i,n;
@@ -62,11 +59,6 @@ void DOT_init(void) {
   int i;
 
   for(i=0;i<MAXDOT;++i) {dot[i].t=0;dot[i].o.r=0;dot[i].o.h=1;}
-  ldot=0;
-}
-
-static void incldot(void) {
-  if(++ldot>=MAXDOT) ldot=0;
 }
 
 void DOT_alloc(void) {
@@ -91,36 +83,16 @@ void DOT_alloc(void) {
 }
 
 void DOT_act(void) {
-  int i,s,xv,yv;
+  int i,s;
 
-  z_dot=1;
   for(i=0;i<MAXDOT;++i) if(dot[i].t) {
-    xv=dot[i].o.xv+dot[i].o.vx;
-    yv=dot[i].o.yv+dot[i].o.vy;
     s=Z_moveobj(&dot[i].o);
-    if(dot[i].t<254) --dot[i].t;
-    if(s&(Z_HITWATER|Z_FALLOUT)) {dot[i].t=0;continue;}
-    if(s&Z_HITLAND) {
-      if(!dot[i].o.xv) {
-        if(yv>2) {
-          if(!xv) dot[i].o.vx=(rand()&1)?-1:1;
-          else dot[i].o.vx=Z_sign(dot[i].o.vx);
-          if(rand()%yv==0) dot[i].o.vx*=2;
-          dot[i].o.yv=yv-2;
-        }
-      }
-      dot[i].o.xv=0;
-      if(dot[i].t>4 && dot[i].t!=255) dot[i].t=4;
+    --dot[i].t;
+    if(s&Z_HITWATER) {dot[i].t=0;continue;}
+    if(s&(Z_HITLAND|Z_FALLOUT)) {
+      if(dot[i].t>4) {dot[i].t=4;dot[i].o.xv=0;}
     }
-    if(s&Z_HITWALL) {
-      dot[i].o.vx=Z_sign(xv)*2;
-      dot[i].o.yv=Z_sign(dot[i].o.yv);
-      if(dot[i].o.yv>=0) if(rand()&3) --dot[i].o.yv;
-      if(dot[i].o.yv>=0) if(rand()&1) --dot[i].o.yv;
-    }
-    if(s&Z_HITCEIL) {dot[i].o.xv=0;dot[i].o.yv=(random(100))?-2:0;}
   }
-  z_dot=0;
 }
 
 void DOT_draw(void) {
@@ -133,42 +105,45 @@ void DOT_draw(void) {
 void DOT_add(int x,int y,char xv,char yv,byte c,byte t) {
   int i;
 
-  if(!Z_canfit(x,y,0,1)) return;
-  i=ldot;
-  dot[i].o.x=x;dot[i].o.y=y;
-  dot[i].o.xv=xv;dot[i].o.yv=yv;
-  dot[i].c=c;dot[i].t=t;
-  dot[i].o.vx=dot[i].o.vy=0;
-  incldot();
+  for(i=0;i<MAXDOT;++i) {
+    if(!dot[i].t) {
+      dot[i].o.x=x;dot[i].o.y=y;
+      dot[i].o.xv=xv;dot[i].o.yv=yv;
+      dot[i].c=c;dot[i].t=t;
+      dot[i].o.vx=dot[i].o.vy=0;
+      return;
+    }
+  }
 }
 
-void DOT_blood(int x,int y,int xv,int yv,int n) {
-  int i,k,dx,dy;
+void DOT_blood(int x,int y,int xv,int yv,int n_) {
+  int i,dx,dy;
+  register int n=n_;
 
-  for(k=n;k;--k) {
-    dx=x+sxr[sr_r];dy=y+syr[sr_r];
-    if(!Z_canfit(x,y,0,1)) continue;
-    i=ldot;
+  for(i=0;i<MAXDOT&&n;++i) {
+    if(!dot[i].t) {
+	dx=x+sxr[sr_r];dy=y+syr[sr_r];
 	dot[i].o.x=dx;dot[i].o.y=dy;
 	dot[i].o.xv=bl_ini[bl_r].xv+Z_dec(xv,3);
-	dot[i].o.yv=bl_ini[bl_r].yv+Z_dec(yv,3)-3;
+	dot[i].o.yv=bl_ini[bl_r].yv+Z_dec(yv,3);
 	dot[i].c=bl_ini[bl_r].c;
 	dot[i].t=255;
 	dot[i].o.vx=dot[i].o.vy=0;
 	if(++bl_r>=MAXINI) bl_r=0;
 	if(++sr_r>=MAXSR) sr_r=0;
-    incldot();
+	--n;
+    }
   }
 }
 
-void DOT_spark(int x,int y,int xv,int yv,int n) {
-  int i,k,dx,dy;
+void DOT_spark(int x,int y,int xv,int yv,int n_) {
+  int i,dx,dy;
+  register int n=n_;
 
-  for(k=n;k;--k) {
-    dx=x+sxr[sr_r];dy=y+syr[sr_r];
-    if(!Z_canfit(x,y,0,1)) continue;
-    i=ldot;
-	dot[i].o.x=dx;dot[i].o.y=dy;
+  for(i=0;i<MAXDOT&&n;i++) {
+    if(!dot[i].t) {
+	dx=x+sxr[sr_r];dot[i].o.x=dx;
+	dy=y+syr[sr_r];dot[i].o.y=dy;
 	dot[i].o.xv=sp_ini[sp_r].xv-xv/4;
 	dot[i].o.yv=sp_ini[sp_r].yv-yv/4;
 	dot[i].c=sp_ini[sp_r].c;
@@ -176,28 +151,32 @@ void DOT_spark(int x,int y,int xv,int yv,int n) {
 	dot[i].o.vx=dot[i].o.vy=0;
 	if(++sp_r>=MAXINI) sp_r=0;
 	if(++sr_r>=MAXSR) sr_r=0;
-    incldot();
+	--n;
+    }
   }
 }
 
-void DOT_water(int x,int y,int xv,int yv,int n,int c) {
-  int i,k,dx,dy;
+void DOT_water(int x,int y,int xv,int yv,int n_,int c) {
+  int i,dx,dy;
   static byte ct[3]={0xC0,0x70,0xB0};
-
+	
   if(c<0 || c>=3) return;
   c=ct[c];
-  for(k=n;k;--k) {
-    dx=x+sxr[sr_r];dy=y+syr[sr_r];
-    if(!Z_canfit(x,y,0,1)) continue;
-    i=ldot;
-	dot[i].o.x=dx;dot[i].o.y=dy;
+  {
+    register int n=n_;
+    for(i=0;i<MAXDOT&&n;i++) {
+      if(!dot[i].t) {
+	dx=x+sxr[sr_r];dot[i].o.x=dx;
+	dy=y+syr[sr_r];dot[i].o.y=dy;
 	dot[i].o.xv=bl_ini[bl_r].xv-Z_dec(xv,3);
 	dot[i].o.yv=bl_ini[bl_r].yv-abs(yv);
 	dot[i].c=bl_ini[bl_r].c-0xB0+c;
-	dot[i].t=254;
+	dot[i].t=255;
 	dot[i].o.vx=dot[i].o.vy=0;
 	if(++bl_r>=MAXINI) bl_r=0;
 	if(++sr_r>=MAXSR) sr_r=0;
-    incldot();
+	--n;
+      }
+    }
   }
 }

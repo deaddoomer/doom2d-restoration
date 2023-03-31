@@ -17,4 +17,3 @@ int MN_spawn_deadpl(obj_t *,byte,int);
 void MN_act(void);
 void MN_mark(void);
 void MN_draw(void);
-void MN_warning(int l,int t,int r,int b);

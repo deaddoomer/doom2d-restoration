@@ -35,7 +35,7 @@ typedef struct{
   int invl,suit;
   char d;
   byte ku,kd,kl,kr,kf,kj,kwl,kwr,kp;
-  int frag,ammo,shel,rock,cell,fuel,kills,secrets;
+  int frag,ammo,shel,rock,cell,kills,secrets;
   byte fire,cwpn,csnd;
   byte amul;
   word wpns;
@@ -45,7 +45,6 @@ typedef struct{
   byte color;
   int id;
   byte keys;
-  char lives;
 }player_t;
 
 void PL_init(void);

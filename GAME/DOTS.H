@@ -1,6 +1,6 @@
 // Dots
 
-#define MAXDOT 400
+#define MAXDOT 200
 
 void DOT_init(void);
 void DOT_alloc(void);

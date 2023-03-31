@@ -23,14 +23,12 @@
 
 extern dword walf[256];
 
-byte z_dot=0;
-
 void V_manspr(int,int,vgaimg *,char);
 void V_manspr2(int,int,vgaimg *,char);
 
 extern void *walp[256];
 
-static void *sth[22],*bfh[160-'!'],*sfh[160-'!'],*bulsnd[2],*stone,*keys[3];
+static void *sth[21],*bfh[160-'!'],*sfh[160-'!'],*bulsnd[2],*stone,*keys[3];
 static int prx=0,pry=0;
 
 int Z_sign(int a) {
@@ -76,11 +74,11 @@ int Z_sound(void *s,int v) {
 void Z_initst(void) {
   int i;
   char s[10];
-  static char nm[22][8]={
+  static char nm[21][8]={
 	"STTNUM0","STTNUM1","STTNUM2","STTNUM3","STTNUM4",
 	"STTNUM5","STTNUM6","STTNUM7","STTNUM8","STTNUM9",
 	"STTMINUS","STTPRCNT",
-	"FISTA0","CSAWA0","PISTA0","SHOTA0","SGN2A0","MGUNA0","LAUNA0",
+	"CSAWA0","PISTA0","SHOTA0","SGN2A0","MGUNA0","LAUNA0",
 	"PLASA0","BFUGA0","GUN2A0"
   };
 
@@ -89,7 +87,7 @@ void Z_initst(void) {
   keys[0]=M_lock(F_getresid("KEYRA0"));
   keys[1]=M_lock(F_getresid("KEYGA0"));
   keys[2]=M_lock(F_getresid("KEYBA0"));
-  for(i=0;i<22;++i)
+  for(i=0;i<21;++i)
     sth[i]=M_lock(F_getresid(nm[i]));
   strcpy(s,"STBF_*");
   for(i='!';i<160;++i) {
@@ -179,11 +177,6 @@ void Z_clrst(void) {
   V_pic(200,w_o,stone);
 }
 
-void Z_drawstlives(char n) {
-  V_setrect(280,30,w_o,40);Z_clrst();
-  V_spr(285,w_o+17,sth[n]);
-}
-
 void Z_drawstkeys(byte k) {
   int x,n;
 
@@ -205,7 +198,7 @@ void Z_drawstprcnt(int y,int n) {
   char s[20];
   int l,i,x,c;
 
-  V_setrect(200,70,y*19+7+w_o,19);Z_clrst();
+  V_setrect(200,120,y*19+7+w_o,19);Z_clrst();
   sprintf(s,"%3d%%",n);
   l=strlen(s);x=210;
   for(i=0;i<l;++i,x+=14) {
@@ -240,7 +233,7 @@ void Z_drawstwpn(int n,int a) {
   char s[20];
   int l,i,x,c;
 
-  i=n;
+  i=(n==0)?-1:n-1;
   V_setrect(200,120,w_o+58,23);Z_clrst();
   if(i>=0) V_spr(232,w_o+58+19,sth[i+12]);
   if(n>=2) {
@@ -275,8 +268,7 @@ int Z_canstand(int x,int y,int r) {
   if(x>=FLDW) x=FLDW-1;
   for(;i<=x;++i)
     if(fld[y][i]==1 || fld[y][i]==2 || fld[y][i]==4)
-      if(!z_dot) return 1;
-      else if(!((walf[fldf[y][i]]|walf[fldb[y][i]])&2)) return 1;
+      return 1;
   return 0;
 }
 
@@ -293,8 +285,7 @@ int Z_hitceil(int x,int y,int r,int h) {
   if(x>=FLDW) x=FLDW-1;
   for(;i<=x;++i)
     if(fld[y][i]==1 || fld[y][i]==2)
-      if(!z_dot) return 1;
-      else if(!((walf[fldf[y][i]]|walf[fldb[y][i]])&2)) return 1;
+      return 1;
   return 0;
 }
 
@@ -308,14 +299,13 @@ int Z_canfit(int x,int y,int r,int h) {
   if(sx<0) sx=0;
   if(sy<0) sy=0;
   x=(x+r)/CELW;
-  y=(y-0)/CELH;
+  y=(y-1)/CELH;
   if(x>=FLDW) x=FLDW-1;
   if(y>=FLDH) y=FLDH-1;
   for(i=sx;i<=x;++i)
     for(j=sy;j<=y;++j)
       if(fld[j][i]==1 || fld[j][i]==2)
-        if(!z_dot) return 0;
-        else if(!((walf[fldf[j][i]]|walf[fldb[j][i]])&2)) return 0;
+        return 0;
   return 1;
 }
 
@@ -544,7 +534,7 @@ int Z_moveobj(obj_t *p) {
 	  {st|=Z_FALLOUT;}
 
 	lx=x;
-	x+=(abs(xv)<=7)?xv:((xv>0)?7:-7);
+	x+=(abs(xv)<=8)?xv:((xv>0)?8:-8);
 	if(z_mon) if(Z_isblocked(x,y,r,h,xv)) st|=Z_BLOCK;
 	if(!Z_canfit(x,y,r,h)) {
 	  if(xv==0) x=lx;
@@ -552,10 +542,10 @@ int Z_moveobj(obj_t *p) {
           else x=((lx+r)&0xFFF8)-r+7;
 	  xv=p->xv=p->vx=0;st|=Z_HITWALL;
 	}
-	xv-=(abs(xv)<=7)?xv:((xv>0)?7:-7);
+	xv-=(abs(xv)<=8)?xv:((xv>0)?8:-8);
 
 	ly=y;
-	y+=(abs(yv)<=7)?yv:((yv>0)?7:-7);
+	y+=(abs(yv)<=8)?yv:((yv>0)?8:-8);
 	if(yv>=8) --y;
 	if(yv<0 && Z_hitceil(x,y,r,h)) {
 	  y=((ly-h+1)&0xFFF8)+h-1;
@@ -565,7 +555,7 @@ int Z_moveobj(obj_t *p) {
 	  y=((y+1)&0xFFF8)-1;
 	  yv=p->yv=p->vy=0;st|=Z_HITLAND;
 	}
-	yv-=(abs(yv)<=7)?yv:((yv>0)?7:-7);
+	yv-=(abs(yv)<=8)?yv:((yv>0)?8:-8);
   }
   p->x=x;p->y=y;
   if(Z_inwater(x,y,r,h)) {

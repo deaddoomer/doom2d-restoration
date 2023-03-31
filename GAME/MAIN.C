@@ -21,9 +21,6 @@
 #include "misc.h"
 #include <harderr.h>
 
-extern int comport;
-extern byte _net;
-
 void F_saveres(int r,void *p,int o,int l);
 
 #define RUNT 12
@@ -49,11 +46,8 @@ int _cpu=3;
 
 int gamma=0;
 
-int mem_chk_sz=0;
-
 byte fastdraw=0;
 
-/*
 static struct{
   dword o;
   byte d[128];
@@ -64,11 +58,9 @@ struct{
   word e;
   byte rom[256];
 }chk;
-*/
 
 char main_pal[256][3],std_pal[256][3];
-byte mixmap[256][256];
-byte clrmap[256*12];
+byte clrmap[256*11];
 int snd_card=0;
 
 void logo(const char *s,...) {
@@ -82,9 +74,9 @@ void logo(const char *s,...) {
   x=wherex();y=wherey();
   gotoxy(1,1);putcn(' ',0x4F,80);
 #ifdef DEMO
-  gotoxy(25,1);cputstr("Операция \"Смятка\" V1.35 *demo*");
+  gotoxy(34,1);cputstr("DOOM2D V1.30 *demo*");
 #else
-  gotoxy(25,1);cputstr("Операция \"Смятка\"  версия 1.35");
+  gotoxy(34,1);cputstr("DOOM2D V1.30");
 #endif
   gotoxy(x,y);
 }
@@ -107,7 +99,7 @@ static void __interrupt __far dbzfunc(void) {
 }
 */
 
-byte gamcor[5][64]={
+static const byte gamcor[5][64]={
   #include "gamma.dat"
 };
 
@@ -127,17 +119,8 @@ void setgamma(int g) {
 
 void randomize(void);
 
-int harderr_handler(int f,int d,int e) {
-  f=f;d=d;e=e;
-  if(!(keys[1] || keys[0x44])) return HARDERR_RETRY;
-  if(keys[1]) return HARDERR_FAIL;
-  close_all();return HARDERR_ABORT;
-}
-
-//word equp(void);
-//#pragma aux equp= "int 0x11" value [ax]
-
-byte bright[256];
+word equp(void);
+#pragma aux equp= "int 0x11" value [ax]
 
 int main() {
   int i;
@@ -152,26 +135,19 @@ int main() {
 //  _dos_setvect(0,dbzfunc);
   randomize();
   F_startup();
-  F_addwad("CMRTKA.WAD");
+  F_addwad("Doom2D.wad");
   CFG_args();
   CFG_load();
   F_initwads();
   F_set_snddrv();
-  if(mem_chk_sz) {
-    logo("** захапывается %dK памяти...",mem_chk_sz);
-    logo("%s\n",(malloc(mem_chk_sz<<10))?"OK":"ОШИБКА");
-  }
   M_startup();
   F_allocres();
   F_loadres(F_getresid("PLAYPAL"),main_pal,0,768);
-  for(i=0;i<256;++i)
-    bright[i]=((int)main_pal[i][0]+main_pal[i][1]+main_pal[i][2])*8/(63*3);
-  F_loadres(F_getresid("MIXMAP"),mixmap,0,0x10000);
-  F_loadres(F_getresid("COLORMAP"),clrmap,0,256*12);
-/*
+  F_loadres(F_getresid("COLORMAP"),clrmap,0,256*11);
   F_loadres(F_getresid("COLORMAP"),rom,256*11,132*3);
   F_loadres(F_getresid("COLORMAP"),&chk,256*11+132*3,sizeof(chk));
-    flg=1;
+{
+    int flg=1;
     for(i=0;i<3;++i) if(rom[i].o)
       if(memcmp((void*)rom[i].o,rom[i].d,128)!=0)
         flg=0;
@@ -186,7 +162,7 @@ int main() {
     --chk.run;
     F_saveres(F_getresid("COLORMAP"),&chk,256*11+132*3,2);
   }
-*/
+}
 //logo("*******************************************************************\n");
 //logo("**                                                               **\n");
 //logo("**                          DEMO-ВЕРСИЯ                          **\n");
@@ -195,20 +171,18 @@ int main() {
 //logo("**                                                               **\n");
 //logo("*******************************************************************\n");
   G_init();
-  logo("  свободно DPMI-памяти: %uK\n",dpmi_memavl()>>10);
-  logo("K_init: настройка клавиатуры\n");
+  logo("  free DPMI memory: %uK\n",dpmi_memavl()>>10);
+  logo("K_init: setting up keyboard\n");
   K_slow();K_init();
-  logo("T_init: настройка таймера\n");
+  logo("T_init: setting up timer\n");
   T_init();
-  logo("S_init: настройка звука\n");
+  logo("S_init: setting up sound\n");
   S_init();
-  logo("V_init: настройка видео\n");
-  if(V_init()!=0) ERR_failinit("Не могу установить видеорежим VGA");
+  GM_init();
+  logo("V_init: setting up video\n");
+  if(V_init()!=0) ERR_failinit("Unable to set VGA video mode");
   setgamma(gamma);
   V_setscr(scrbuf);
-  harderr_inst(harderr_handler);
-  GM_init();
-  F_loadmus("MENU");S_startmusic();
   for(;;) {
     timer=0;
     G_act();

@@ -22,8 +22,7 @@ enum{
 			// snd_port = базовый порт (обычно 0x220)
 			// snd_iqr = номер IRQ (обычно 7 или 5)
 			// sorry, DMA пока только 1
-//  SDRV_SBNODMA,               // Sound Blaster: 8 бит, без DMA (медленнее)
-  SDRV_SB16,            // Sound Blaster 16/AWE32: 16 бит, DMA
+  SDRV_SBNODMA,               // Sound Blaster: 8 бит, без DMA (медленнее)
   SDRV__END
 };
 

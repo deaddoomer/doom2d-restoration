@@ -10,9 +10,9 @@ timer dd 0
 btm dw 0,0
 int8sav dd 0
 int8sel dw 0
-;rmsav dw 0,0
-;rmptr dd 0
-;rmsel dw 0
+rmsav dw 0,0
+rmptr dd 0
+rmsel dw 0
 cnt dw 0
 frq dw 0FFFFh
 drv_on db 0
@@ -21,7 +21,7 @@ time_proc dd offset def_timeproc
 
 const
 
-;__timer_rm_proc db 50h,0B0h,20h,0E6h,20h,58h,0CFh
+__timer_rm_proc db 50h,0B0h,20h,0E6h,20h,58h,0CFh
 
 codeseg
 
@@ -53,25 +53,25 @@ public T_set_timeproc
 	ret
 endp
 
-proc T_init uses ebx ecx esi edi es
+proc T_init uses ebx ecx esi edi
 public T_init
 	cmp [drv_on],0
 	jne @@x
-;	mov ax,100h
-;	mov bx,1
-;	int 31h
-;	jc @@x
-;	mov [rmsel],dx
-;	movzx eax,ax
-;	shl eax,4
-;	mov [rmptr],eax
-;	mov edi,eax
-;	mov esi,offset __timer_rm_proc
-;	push ds
-;	pop es
-;	cld
-;	mov ecx,7
-;	rep movsb
+	mov ax,100h
+	mov bx,1
+	int 31h
+	jc @@x
+	mov [rmsel],dx
+	movzx eax,ax
+	shl eax,4
+	mov [rmptr],eax
+	mov edi,eax
+	mov esi,offset __timer_rm_proc
+	push ds
+	pop es
+	cld
+	mov ecx,7
+	rep movsb
 	mov ah,0
 	int 1Ah
 	mov [btm],dx
@@ -84,11 +84,11 @@ public T_init
 	int 21h
 	mov [int8sav],ebx
 	mov [int8sel],es
-;	mov ax,200h
-;	mov bl,8
-;	int 31h
-;	mov [rmsav],dx
-;	mov [rmsav+2],cx
+	mov ax,200h
+	mov bl,8
+	int 31h
+	mov [rmsav],dx
+	mov [rmsav+2],cx
 	push ds
 	mov ax,2508h
 	push cs
@@ -96,12 +96,12 @@ public T_init
 	mov edx,offset TimeDriver
 	int 21h
 	pop ds
-;	mov ecx,[rmptr]
-;	shr ecx,4
-;	xor edx,edx
-;	mov ax,201h
-;	mov bl,8
-;	int 31h
+	mov ecx,[rmptr]
+	shr ecx,4
+	xor edx,edx
+	mov ax,201h
+	mov bl,8
+	int 31h
 	mov bx,0FFFFh
 	mov [frq],bx
 	mov al,36h
@@ -126,11 +126,11 @@ public T_done
 	out 40h,al
 	xor al,al
 	out 40h,al
-;	mov ax,201h
-;	mov bl,8
-;	mov dx,[rmsav]
-;	mov cx,[rmsav+2]
-;	int 31h
+	mov ax,201h
+	mov bl,8
+	mov dx,[rmsav]
+	mov cx,[rmsav+2]
+	int 31h
 	push ds
 	mov ax,2508h
 	lds edx,[fword int8sav]
@@ -141,16 +141,15 @@ public T_done
 	mov dx,[btm]
 	mov cx,[btm+2]
 	int 1Ah
-;	mov ax,101h
-;	mov dx,[rmsel]
-;	int 31h
+	mov ax,101h
+	mov dx,[rmsel]
+	int 31h
 	sti
 @@x:	ret
 endp
 
 proc TimeDriver
 	push eax ds
-	cld
 	mov ax,DGROUP
 	mov ds,ax
 	mov ax,[frq]
@@ -159,16 +158,9 @@ proc TimeDriver
 	add [cnt],ax
 	jnc @@1
 	inc [dword btm]
-	cmp ax,0FFFFh
-	je @@2
 @@1:	call [time_proc]
 	mov al,20h
 	out 20h,al
-	pop ds eax
-	iretd
-@@2:	pushfd
-	call [fword int8sav]
-	call [time_proc]
 	pop ds eax
 	iretd
 endp

@@ -15,7 +15,13 @@
 #include "switch.h"
 #include "misc.h"
 #include "fx.h"
-#include "smoke.h"
+
+// HACK: this externs will fix addresses of global variables
+// as they ordeded in original doom2d.exe
+extern int _wp0, _wp1, _wp2, _wp3, _wp4, _wp5, _wp6;
+extern int _wp10, _wp11, _wp12, _wp13, _wp14, _wp15, _wp16;
+extern int _wp17, _wp18, _wp19, _wp20, _wp21, _wp22;
+extern int _wp23, _wp24, _wp25, _wp26, _wp27, _wp28, _wp29;
 
 #define MANCOLOR 0xD0
 
@@ -31,8 +37,7 @@ enum{
 
 typedef struct{
   obj_t o;
-  byte t,d,st,ftime;
-  int fobj;
+  byte t,d,st;
   int s;
   char *ap;
   int aim,life,pain,ac,tx,ty,ammo;
@@ -43,7 +48,7 @@ typedef struct{
   int r,h,l,mp,rv,jv,sp,minp;
 }mnsz_t;
 
-byte nomon=1;
+byte nomon=0;
 
 static char *sleepanim[MN_TN]={
   "AAABBB","AAABBB","AAABBB","AAABBB","AAABBB","AAABBB","AAABBB","AAABBB",
@@ -81,9 +86,7 @@ static char *sleepanim[MN_TN]={
   "","U","U","U","","T","","","","","","","","","","","","","","W"
 };
 
-int hit_xv,hit_yv;
-
-static void *spr[MN_TN][29*2],*fspr[8],*fsnd,*pauksnd,*trupsnd,*sgun[2];
+static void *spr[MN_TN][29*2],*fspr[8],*fsnd,*pauksnd,*trupsnd;
 static char sprd[MN_TN][29*2];
 static void *snd[MN_TN][5],*impsitsnd[2],*impdthsnd[2],*firsnd,*slopsnd,*gsnd[4];
 static void *swgsnd,*pchsnd,*pl_spr[2],*telesnd;
@@ -182,8 +185,6 @@ void MN_alloc(void) {
   };
 
 //  logo("size of monster: %d\n",sizeof(mn[0]));
-  sgun[0]=Z_getspr("PWP4",0,1,NULL);
-  sgun[1]=Z_getspr("PWP4",1,1,NULL);
   for(j=0;j<MN_TN;++j) {
     for(i=0;i<mms[j];++i) spr[j][i]=Z_getspr(msn[j],i/2,(i&1)+1,&sprd[j][i]);
     if(j==MN_BARREL-1)
@@ -194,8 +195,10 @@ void MN_alloc(void) {
     logo_gas(j+5,GGAS_TOTAL);
   }
   for(i=0;i<8;++i) fspr[i]=Z_getspr("FIRE",i,0,NULL);
+do {
   pl_spr[0]=Z_getspr("PLAY",'N'-'A',0,NULL);
   pl_spr[1]=Z_getspr("PLAY",'W'-'A',0,NULL);
+} while(0);
   impsitsnd[0]=Z_getsnd("BGSIT1");
   impsitsnd[1]=Z_getsnd("BGSIT2");
   impdthsnd[0]=Z_getsnd("BGDTH1");
@@ -209,7 +212,9 @@ void MN_alloc(void) {
   fsnd=Z_getsnd("FLAME");
   firsnd=Z_getsnd("FIRSHT");
   slopsnd=Z_getsnd("SLOP");
+do {
   swgsnd=Z_getsnd("SKESWG");
+} while(0);
   pchsnd=Z_getsnd("SKEPCH");
   telesnd=Z_getsnd("TELEPT");
   pauksnd=Z_getsnd("PAUK1");
@@ -287,7 +292,6 @@ ok:
   mn[i].aim=-3;mn[i].atm=0;
   mn[i].pain=0;
   mn[i].ammo=0;
-  mn[i].ftime=0;
   return i;
 }
 
@@ -500,26 +504,7 @@ void MN_act(void) {
   }
   if(st&Z_HITWATER) Z_splash(&mn[i].o,mn[i].o.r+mn[i].o.h);
   SW_press(mn[i].o.x,mn[i].o.y,mn[i].o.r,mn[i].o.h,8,i);
-  if(mn[i].ftime) {
-    --mn[i].ftime;
-    SMK_flame(mn[i].o.x,mn[i].o.y-mn[i].o.h/2,
-      mn[i].o.xv+mn[i].o.vx,mn[i].o.yv+mn[i].o.vy,
-      mn[i].o.r/2,mn[i].o.h/2,rand()%(200*2+1)-200,-500,1,mn[i].fobj);
-  }
-  if(st&Z_INWATER) mn[i].ftime=0;
   if(mn[i].st==DEAD) continue;
-  if(st&Z_INWATER) if(!(rand()&31)) switch(t) {
-    case MN_FISH:
-      if(rand()&3) break;
-    case MN_ROBO: case MN_BARREL:
-    case MN_PL_DEAD: case MN_PL_MESS:
-      FX_bubble(mn[i].o.x+((rand()&1)*2-1)*random(mn[i].o.r+1),
-        mn[i].o.y-random(mn[i].o.h+1),0,0,1
-      );
-      break;
-    default:
-      FX_bubble(mn[i].o.x,mn[i].o.y-mn[i].o.h*3/4,0,0,5);
-  }
 //  mn[i].o.h=mnsz[t].h;
   if(t==MN_BARREL) {
 //    BM_mark(&mn[i].o,BM_MONSTER);
@@ -672,7 +657,7 @@ void MN_act(void) {
 		  if(sx==-3) break;
 		  if(!mn[sx].t || mn[sx].st!=DEAD) break;
             	  setst(sx,REVIVE);Z_sound(slopsnd,128);
-		  hit_xv=hit_yv=0;MN_hit(i,5,-3,HIT_SOME);
+		  MN_hit(i,5,-3,HIT_SOME);
 		  break;
 	  }if(t!=MN_SOUL && mn[i].st!=DIE) setst(i,GO);
 	  break;
@@ -727,7 +712,6 @@ void MN_act(void) {
 	  setst(i,GO);break;
 	case DIE:
 	  setst(i,DEAD);
-	  if(t==MN_PAIN || t==MN_SOUL) mn[i].ftime=0;
 	  if(t==MN_PAIN) {
 		if((sx=MN_spawn(mn[i].o.x-15,mn[i].o.y,0,MN_SOUL))==-1) break;
 		setst(sx,GO);
@@ -768,8 +752,6 @@ void MN_draw(void) {
 		spr[mn[i].t-1][(mn[i].ap[mn[i].ac]-'A')*2+mn[i].d],
 		sprd[mn[i].t-1][(mn[i].ap[mn[i].ac]-'A')*2+mn[i].d]);
 	  else{
-	    if(mn[i].ap[mn[i].ac]=='E' || mn[i].ap[mn[i].ac]=='F')
-	      Z_drawspr(mn[i].o.x,mn[i].o.y,sgun[mn[i].ap[mn[i].ac]-'E'],mn[i].d);
 	    Z_drawmanspr(mn[i].o.x,mn[i].o.y,
 		spr[mn[i].t-1][(mn[i].ap[mn[i].ac]-'A')*2+mn[i].d],
 		sprd[mn[i].t-1][(mn[i].ap[mn[i].ac]-'A')*2+mn[i].d],MANCOLOR);
@@ -799,8 +781,6 @@ static int MN_hit(int n,int d,int o,int t) {
 		return 0;
 	}
   }
-  if(t==HIT_FLAME) if(mn[n].ftime && mn[n].fobj==o) {if(g_time&31) return 1;}
-    else {mn[n].ftime=255;mn[n].fobj=o;}
   if(t==HIT_ELECTRO) if(mn[n].t==MN_FISH)
     {setst(n,RUN);mn[n].s=20;mn[n].d=rand()&1;return 1;}
   if(t==HIT_TRAP) mn[n].life=-100;
@@ -812,7 +792,7 @@ static int MN_hit(int n,int d,int o,int t) {
 	if(mn[n].pain>=mnsz[mn[n].t].minp) setst(n,PAIN);
   }
   if(mn[n].t!=MN_BARREL)
-    DOT_blood(mn[n].o.x,mn[n].o.y-mn[n].o.h/2,hit_xv,hit_yv,d*2);
+    DOT_blood(mn[n].o.x,mn[n].o.y,mn[n].o.xv,mn[n].o.yv,d/2);
   mn[n].aim=o;mn[n].atm=0;
   if(mn[n].life<=0) {
 	if(mn[n].t!=MN_BARREL)
@@ -870,8 +850,6 @@ static void goodsnd(void) {
 int Z_hit(obj_t *o,int d,int own,int t) {
   int i;
 
-  hit_xv=o->xv+o->vx;
-  hit_yv=o->yv+o->vy;
   if(Z_overlap(o,&pl1.o)) if(PL_hit(&pl1,d,own,t)) {
 	pl1.o.vx+=(o->xv+o->vx)*((t==HIT_BFG)?8:1)/4;
 	pl1.o.vy+=(o->yv+o->vy)*((t==HIT_BFG)?8:1)/4;
@@ -903,7 +881,6 @@ void MN_killedp(void) {
 }
 
 int Z_hitobj(int obj,int d,int own,int t) {
-  hit_xv=hit_yv=0;
   if(obj==-1) return PL_hit(&pl1,d,own,t);
   else if(obj==-2 && _2pl) return PL_hit(&pl2,d,own,t);
   else if(obj<0 || obj>=MAXMN) return 0;
@@ -921,16 +898,16 @@ void Z_explode(int x,int y,int rad,int own) {
   dx=pl1.o.x-x;dy=pl1.o.y-pl1.o.h/2-y;
   if((long)dx*dx+(long)dy*dy<r) {
     if(!(m=max(abs(dx),abs(dy)))) m=1;
-	pl1.o.vx+=hit_xv=dx*10/m;
-	pl1.o.vy+=hit_yv=dy*10/m;
+	pl1.o.vx+=dx*10/m;
+	pl1.o.vy+=dy*10/m;
 	PL_hit(&pl1,100*(rad-m)/rad,own,HIT_ROCKET);
   }
   if(_2pl) {
     dx=pl2.o.x-x;dy=pl2.o.y-pl2.o.h/2-y;
     if((long)dx*dx+(long)dy*dy<r) {
       if(!(m=max(abs(dx),abs(dy)))) m=1;
-	  pl2.o.vx+=hit_xv=dx*10/m;
-	  pl2.o.vy+=hit_yv=dy*10/m;
+	  pl2.o.vx+=dx*10/m;
+	  pl2.o.vy+=dy*10/m;
       PL_hit(&pl2,100*(rad-m)/rad,own,HIT_ROCKET);
     }
   }
@@ -938,8 +915,8 @@ void Z_explode(int x,int y,int rad,int own) {
     dx=mn[i].o.x-x;dy=mn[i].o.y-mn[i].o.h/2-y;
     if((long)dx*dx+(long)dy*dy<r) {
       if(!(m=max(abs(dx),abs(dy)))) m=1;
-	  mn[i].o.vx+=hit_xv=dx*10/m;
-	  mn[i].o.vy+=hit_yv=dy*10/m;
+	  mn[i].o.vx+=dx*10/m;
+	  mn[i].o.vy+=dy*10/m;
 	  MN_hit(i,mn[i].o.r*10*(rad-m)/rad,own,HIT_ROCKET);
     }
   }
@@ -948,7 +925,6 @@ void Z_explode(int x,int y,int rad,int own) {
 void Z_bfg9000(int x,int y,int own) {
   int dx,dy,i;
 
-  hit_xv=hit_yv=0;
   if(x<-100 || x>FLDW*CELW+100) return;
   if(y<-100 || y>FLDH*CELH+100) return;
   dx=pl1.o.x-x;dy=pl1.o.y-pl1.o.h/2-y;
@@ -979,7 +955,6 @@ void Z_bfg9000(int x,int y,int own) {
 int Z_chktrap(int t,int d,int o,int ht) {
   int i,s;
 
-  hit_xv=hit_yv=0;
   s=0;
   if(Z_istrapped(pl1.o.x,pl1.o.y,pl1.o.r,pl1.o.h)) {
     s=1;
@@ -1007,16 +982,4 @@ void Z_teleobj(int o,int x,int y) {
   else return;
   FX_tfog(p->x,p->y);FX_tfog(p->x=x,p->y=y);
   Z_sound(telesnd,128);
-}
-
-void MN_warning(int l,int t,int r,int b) {
-  int i;
-
-  for(i=0;i<MAXMN;++i) if(mn[i].t && mn[i].t!=MN_CACO && mn[i].t!=MN_SOUL
-      && mn[i].t!=MN_PAIN && mn[i].t!=MN_FISH)
-    if(mn[i].st!=DIE && mn[i].st!=DEAD && mn[i].st!=SLEEP)
-      if(mn[i].o.x+mn[i].o.r>=l && mn[i].o.x-mn[i].o.r<=r
-      && mn[i].o.y>=t && mn[i].o.y-mn[i].o.h<=b)
-        if(Z_canstand(mn[i].o.x,mn[i].o.y,mn[i].o.r))
-          mn[i].o.yv=-mnsz[mn[i].t].jv;
 }

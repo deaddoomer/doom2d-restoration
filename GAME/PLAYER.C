@@ -8,7 +8,6 @@
 #include "keyb.h"
 #include "view.h"
 #include "dots.h"
-#include "smoke.h"
 #include "weapons.h"
 #include "monster.h"
 #include "fx.h"
@@ -16,8 +15,6 @@
 #include "switch.h"
 #include "player.h"
 #include "misc.h"
-
-extern int hit_xv,hit_yv;
 
 void Z_drawstkeys(byte);
 void Z_drawstlives(char);
@@ -33,11 +30,11 @@ void MN_killedp(void);
 #define PL_AIR 360
 #define PL_AQUA_AIR 1091
 
-byte p_immortal=0,p_fly=0;
+byte p_immortal=0;
 
 int PL_JUMP=10,PL_RUN=8;
 
-int wp_it[11]={0,I_CSAW,0,I_SGUN,I_SGUN2,I_MGUN,I_LAUN,I_PLAS,I_BFG,I_GUN2,0};
+int wp_it[10]={0,I_CSAW,0,I_SGUN,I_SGUN2,I_MGUN,I_LAUN,I_PLAS,I_BFG,I_GUN2};
 
 enum{STAND,GO,DIE,SLOP,DEAD,MESS,OUT,FALL};
 
@@ -46,13 +43,9 @@ typedef void fire_f(int,int,int,int,int);
 int Z_getacid(int x,int y,int r,int h);
 
 player_t pl1,pl2;
-static int aitime;
-static void *aisnd[3];
-static void *pdsnd[5];
 
 static void *spr[27*2],*snd[11];
 static char sprd[27*2];
-static void *wpn[11][6];
 static byte goanim[]="BDACDA",
   dieanim[]="HHHHIIIIJJJJKKKKLLLLMMMM",
   slopanim[]="OOPPQQRRSSTTUUVVWW";
@@ -72,16 +65,16 @@ void PL_loadgame(int h) {
 static int nonz(int a) {return (a)?a:1;}
 
 static int firediry(player_t *p) {
-  if(p->f&PLF_UP) return -42;
-  if(p->f&PLF_DOWN) return 19;
+  if(p->f&PLF_UP) return -30;
+  if(p->f&PLF_DOWN) return 15;
   return 0;
 }
 
 static void fire(player_t *p) {
-  static fire_f *ff[11]={
+  static fire_f *ff[10]={
     WP_pistol,WP_pistol,WP_pistol,WP_shotgun,WP_dshotgun,
-    WP_mgun,WP_rocket,WP_plasma,WP_bfgshot,WP_shotgun,WP_pistol};
-  static int ft[11]={5,2,6,18,36,2,12,2,0,2,1};
+    WP_mgun,WP_rocket,WP_plasma,WP_bfgshot,WP_shotgun};
+  static int ft[10]={5,2,6,18,36,2,12,2,0,2};
 
   if(p->cwpn) return;
   if(p->wpn==8) {
@@ -118,15 +111,9 @@ static void fire(player_t *p) {
       case 7:
 	if(!p->cell) return;
 	--p->cell;p->drawst|=PL_DRAWWPN;break;
-      case 10:
-	if(!p->fuel) return;
-	--p->fuel;p->drawst|=PL_DRAWWPN;break;
     }
-    if(p->wpn==10)
-      WP_ognemet(p->o.x,p->o.y-15,p->o.x+((p->d)?30:-30),p->o.y-15+firediry(p),
-        p->o.xv+p->o.vx,p->o.yv+p->o.vy,p->id);
-    else if(p->wpn>=1) ff[p->wpn] (p->o.x,p->o.y-15,p->o.x+((p->d)?30:-30),
-      p->o.y-15+firediry(p),p->id);
+    if(p->wpn>=1) ff[p->wpn] (p->o.x,p->o.y-16,p->o.x+((p->d)?30:-30),
+      p->o.y-16+firediry(p),p->id);
     else WP_punch(p->o.x+((p->d)?4:-4),p->o.y,3,p->id);
     p->fire=ft[p->wpn];
     if(p->wpn>=2) p->f|=PLF_FIRE;
@@ -137,10 +124,10 @@ static void chgwpn(player_t *p) {
   if(p->cwpn) return;
   if(p->fire && p->wpn!=1) return;
   if(keys[p->kwl]) {
-	do{ if(--p->wpn<0) p->wpn=10; }while(!(p->wpns&(1<<p->wpn)));
+	do{ if(--p->wpn<0) p->wpn=9; }while(!(p->wpns&(1<<p->wpn)));
 	p->cwpn=3;
   }else if(keys[p->kwr]) {
-	do{ if(++p->wpn>10) p->wpn=0; }while(!(p->wpns&(1<<p->wpn)));
+	do{ if(++p->wpn>9) p->wpn=0; }while(!(p->wpns&(1<<p->wpn)));
 	p->cwpn=3;
   }
   if(p->cwpn) {
@@ -157,17 +144,13 @@ static void jump(player_t *p,int st) {
 	  p->air=0;
 	  PL_hit(p,10,-3,HIT_WATER);
 	}else if((p->air&31)==0) {
-	  FX_bubble(p->o.x,p->o.y-20,0,0,5);
+	  FX_bubble(p->o.x,p->o.y-20,5);
 	}
 	p->drawst|=PL_DRAWAIR;
   }
   if(keys[p->kj]) {
-    if(p_fly) {
-      p->o.yv=-PL_FLYUP;
-    }else{
-      if(Z_canstand(p->o.x,p->o.y,p->o.r)) p->o.yv=-PL_JUMP;
-      else if(st&Z_INWATER) p->o.yv=-PL_SWUP;
-    }
+    if(Z_canstand(p->o.x,p->o.y,p->o.r)) p->o.yv=-PL_JUMP;
+    else if(st&Z_INWATER) p->o.yv=-PL_SWUP;
   }
 }
 
@@ -183,11 +166,10 @@ int PL_isdead(player_t *p) {
 void PL_init(void) {
   p_immortal=0;
   PL_JUMP=10;PL_RUN=8;
-  aitime=0;
 }
 
 void PL_alloc(void) {
-  int i,j;
+  int i;
   static char nm[][6]={
 	"OOF",
 	"PLPAIN",
@@ -201,29 +183,13 @@ void PL_alloc(void) {
 	"SAWHIT",
 	"PLFALL"
   };
-  static char s[6];
 
 //  logo("  players");
   for(i=0;i<27;++i) {
 	spr[i*2]=Z_getspr("PLAY",i,1,sprd+i*2);
 	spr[i*2+1]=Z_getspr("PLAY",i,2,sprd+i*2+1);
   }
-  memcpy(s,"PWPx",4);
-  for(i=1;i<11;++i) {
-    s[3]=((i<10)?'0':('A'-10))+i;
-    for(j=0;j<6;++j) wpn[i][j]=Z_getspr(s,j,1,NULL);
-  }
   for(i=0;i<11;++i) snd[i]=Z_getsnd(nm[i]);
-  memcpy(s,"AIx",4);
-  for(i=0;i<3;++i) {
-    s[2]=i+'1';
-    aisnd[i]=Z_getsnd(s);
-  }
-  memcpy(s,"PLDTHx",6);
-  for(i=0;i<5;++i) {
-    s[5]=i+'1';
-    pdsnd[i]=Z_getsnd(s);
-  }
 }
 
 void PL_restore(player_t *p) {
@@ -237,7 +203,7 @@ void PL_restore(player_t *p) {
       p->life=100;p->armor=0;p->air=PL_AIR;
       p->wpns=5;
       p->wpn=2;
-      p->ammo=50;p->fuel=p->shel=p->rock=p->cell=0;
+      p->ammo=50;p->shel=p->rock=p->cell=0;
       p->amul=1;
   }
   p->st=STAND;
@@ -273,8 +239,8 @@ int PL_hit(player_t *p,int d,int o,int t) {
 	else if(o==-2) return 0;
   }
   if(t!=HIT_WATER && t!=HIT_ELECTRO)
-	DOT_blood(p->o.x,p->o.y-15,hit_xv,hit_yv,d*2);
-	else if(t==HIT_WATER) FX_bubble(p->o.x,p->o.y-20,0,0,d/2);
+	DOT_blood(p->o.x,p->o.y-15,p->o.xv,p->o.yv,d/2);
+	else if(t==HIT_WATER) FX_bubble(p->o.x,p->o.y-20,d/2);
   if(p_immortal || p->invl) return 1;
   p->hit+=d;
   p->hito=o;
@@ -296,30 +262,23 @@ void PL_damage(player_t *p) {
   p->drawst|=PL_DRAWLIFE|PL_DRAWARMOR;
   if((p->armor-=p->hit-i)<0) {p->life+=p->armor;p->armor=0;}
   if((p->life-=i)<=0) {
-    if(p->life>-30) {p->st=DIE;p->s=0;Z_sound(pdsnd[rand()%5],128);}
+    if(p->life>-30) {p->st=DIE;p->s=0;Z_sound(snd[2],128);}
 	else {p->st=SLOP;p->s=0;Z_sound(snd[3],128);}
 //	IT_drop_ammo(I_AMMO,p->ammo,p->o.x,p->o.y);
 //	IT_drop_ammo(I_SBOX,p->shel,p->o.x,p->o.y);
 //	IT_drop_ammo(I_RBOX,p->rock,p->o.x,p->o.y);
 //	IT_drop_ammo(I_CELP,p->cell,p->o.x,p->o.y);
 	if(p->amul>1) IT_spawn(p->o.x,p->o.y,I_BPACK);
-	if(!g_dm) {
-	  if(p->keys&16) IT_spawn(p->o.x,p->o.y,I_KEYR);
-	  if(p->keys&32) IT_spawn(p->o.x,p->o.y,I_KEYG);
-	  if(p->keys&64) IT_spawn(p->o.x,p->o.y,I_KEYB);
-	}
-	for(i=1,p->wpns>>=1;i<11;++i,p->wpns>>=1)
+	for(i=1,p->wpns>>=1;i<10;++i,p->wpns>>=1)
 	  if(i!=2) if(p->wpns&1) IT_spawn(p->o.x,p->o.y,wp_it[i]);
 	p->wpns=5;p->wpn=2;
 	p->f|=PLF_PNSND;
 	p->drawst|=PL_DRAWWPN;
-    if(g_dm && _2pl) {
+    if(g_dm) {
 	  if(p->id==-1) {
-		if(p->hito==-2) {++pl2.kills;++pl2.frag;/*if(pl1.frag<=0) --pl1.frag;*/}
-		else if(p->hito==-1) --pl1.frag;
+		if(p->hito==-2) {++pl2.kills;++pl2.frag;if(pl1.frag<=0) --pl1.frag;}
 	  }else{
-	    if(p->hito==-1) {++pl1.kills;++pl1.frag;/*if(pl2.frag<=0) --pl2.frag;*/}
-	    else if(p->hito==-2) --pl2.frag;
+	    if(p->hito==-1 && _2pl) {++pl1.kills;++pl1.frag;if(pl2.frag<=0) --pl2.frag;}
 	  }
 	  pl1.drawst|=PL_DRAWFRAG;
 	  if(_2pl) pl2.drawst|=PL_DRAWFRAG;
@@ -459,7 +418,6 @@ int PL_give(player_t *p,int t) {
 void PL_act(player_t *p) {
   int st;
 
-  if(--aitime<0) aitime=0;
   SW_press(p->o.x,p->o.y,p->o.r,p->o.h,4|p->keys,p->id);
   if(!p->suit) if((g_time&15)==0)
     PL_hit(p,Z_getacid(p->o.x,p->o.y,p->o.r,p->o.h),-3,HIT_SOME);
@@ -470,7 +428,6 @@ void PL_act(player_t *p) {
 		  p->s=5;break;
 		default:
 		  p->s=Z_sound(snd[10],128);
-	          if(g_dm) --p->frag;
 	  }p->st=FALL;
 	}
   }else st=0;
@@ -502,8 +459,6 @@ void PL_act(player_t *p) {
       break;
 	case GO:
 	  chgwpn(p);fire(p);jump(p,st);
-	  if(p_fly)
-	    SMK_gas(p->o.x,p->o.y-2,2,3,p->o.xv+p->o.vx,p->o.yv+p->o.vy,128);
 	  if((p->s+=abs(p->o.xv)/2) >= 24) p->s%=24;
 	  if(!keys[p->kl] && !keys[p->kr]) {
 		if(p->o.xv) p->o.xv=Z_dec(p->o.xv,1);
@@ -511,16 +466,10 @@ void PL_act(player_t *p) {
 		break;
 	  }
 	  if(p->o.xv<PL_RUN && keys[p->kr]) {p->o.xv+=PL_RUN>>3;p->d=1;}
-	    else if(PL_RUN>8)
-	      SMK_gas(p->o.x,p->o.y-2,2,3,p->o.xv+p->o.vx,p->o.yv+p->o.vy,32);
 	  if(p->o.xv>-PL_RUN && keys[p->kl]) {p->o.xv-=PL_RUN>>3;p->d=0;}
-	    else if(PL_RUN>8)
-	      SMK_gas(p->o.x,p->o.y-2,2,3,p->o.xv+p->o.vx,p->o.yv+p->o.vy,32);
 	  break;
 	case STAND:
 	  chgwpn(p);fire(p);jump(p,st);
-	  if(p_fly)
-	    SMK_gas(p->o.x,p->o.y-2,2,3,p->o.xv+p->o.vx,p->o.yv+p->o.vy,128);
 	  if(keys[p->kl]) {p->st=GO;p->s=0;p->d=0;}
       else if(keys[p->kr]) {p->st=GO;p->s=0;p->d=1;}
       break;
@@ -528,15 +477,13 @@ void PL_act(player_t *p) {
     case MESS:
     case OUT:
 	  p->o.xv=Z_dec(p->o.xv,1);
-	  if(keys[p->ku] || keys[p->kd] || keys[p->kl] || keys[p->kr] ||
-	     keys[p->kf] || keys[p->kj] || keys[p->kp] || keys[p->kwl] || keys[p->kwr]) {
+	  if(keys[p->ku]) {
 		if(p->st!=OUT) MN_spawn_deadpl(&p->o,p->color,(p->st==MESS)?1:0);
 		PL_restore(p);
 		if(g_dm) {G_respawn_player(p);break;}
 		if(!_2pl) {
-		  if(--p->lives==0) {G_start();break;}
-		  else{p->o.x=dm_pos[0].x;p->o.y=dm_pos[0].y;p->d=dm_pos[0].d;}
-		  p->drawst|=PL_DRAWLIVES;
+		  G_start();
+		  break;
 		}
 		if(p->id==-1)
 		  {p->o.x=dm_pos[0].x;p->o.y=dm_pos[0].y;p->d=dm_pos[0].d;}
@@ -554,33 +501,24 @@ static int standspr(player_t *p) {
   return 'E';
 }
 
-static int wpnspr(player_t *p) {
-  if(p->f&PLF_UP) return 'C';
-  if(p->f&PLF_DOWN) return 'E';
-  return 'A';
-}
-
 void PL_draw(player_t *p) {
-  int s,w,wx,wy;
-  static int wytab[]={-1,-2,-1,0};
+  int s;
 
-  s='A';w=0;wx=wy=0;
+  s='A';
   switch(p->st) {
     case STAND:
-      if(p->f&PLF_FIRE) {s=standspr(p)+1;w=wpnspr(p)+1;}
-      else if(p->pain) {s='G';w='A';wx=p->d?2:-2;wy=1;}
-      else {s=standspr(p);w=wpnspr(p);}
+      if(p->f&PLF_FIRE) {s=standspr(p)+1;}
+      else if(p->pain) {s='G';}
+      else {s=standspr(p);}
       break;
     case DEAD:
       s='N';break;
     case MESS:
       s='W';break;
     case GO:
-      if(p->pain) {s='G';w='A';wx=p->d?2:-2;wy=1;}
-      else {
-        s=goanim[p->s/8];w=(p->f&PLF_FIRE)?'B':'A';
-        wx=p->d?2:-2;wy=1+wytab[s-'A'];
-      }
+      if(p->f&PLF_FIRE) {s=standspr(p)+1;}
+      else if(p->pain) {s='G';}
+      else {s=goanim[p->s/8];}
       break;
     case DIE:
       s=dieanim[p->s];break;
@@ -589,35 +527,7 @@ void PL_draw(player_t *p) {
     case OUT:
       s=0;break;
   }
-  if(p->wpn==0) w=0;
-  if(w) Z_drawspr(p->o.x+wx,p->o.y+wy,wpn[p->wpn][w-'A'],p->d);
   if(s) Z_drawmanspr(p->o.x,p->o.y,spr[(s-'A')*2+p->d],sprd[(s-'A')*2+p->d],p->color);
-}
-
-void *PL_getspr(int s,int d) {
-  return spr[(s-'A')*2+d];
-}
-
-static void chk_bfg(player_t *p,int x,int y) {
-  int dx,dy;
-
-  if(aitime) return;
-  switch(p->st) {
-    case DIE: case SLOP: case FALL:
-    case DEAD: case MESS: case OUT:
-      return;
-  }
-  dx=p->o.x-x;dy=p->o.y-p->o.h/2-y;
-  if(dx*dx+dy*dy<=1600) {
-    aitime=Z_sound(aisnd[rand()%3],128)*4;
-  }
-}
-
-void bfg_fly(int x,int y,int o) {
-//  if(!g_dm) return;
-  if(o!=-1) chk_bfg(&pl1,x,y);
-  if(_2pl) if(o!=-2) chk_bfg(&pl2,x,y);
-  if(o==-1 || o==-2) MN_warning(x-50,y-50,x+50,y+50);
 }
 
 void PL_drawst(player_t *p) {
@@ -638,8 +548,6 @@ void PL_drawst(player_t *p) {
 	i=p->shel;break;
       case 6:
 	i=p->rock;break;
-      case 10:
-	i=p->fuel;break;
       case 7: case 8:
 	i=p->cell;break;
     }
@@ -647,5 +555,4 @@ void PL_drawst(player_t *p) {
   }
   if(p->drawst&PL_DRAWFRAG) Z_drawstnum(p->frag);
   if(p->drawst&PL_DRAWKEYS) Z_drawstkeys(p->keys);
-  if(!_2pl) if(p->drawst&PL_DRAWLIVES) Z_drawstlives(p->lives);
 }

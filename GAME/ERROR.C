@@ -12,8 +12,6 @@
 #include "files.h"
 #include "error.h"
 
-void CFG_save(void);
-
 void K_fast(void);
 
 void gotoxy(int,int);
@@ -42,7 +40,7 @@ void ERR_fatal(char *s,...) {
   va_list ap;
 
   close_all();
-  puts("\nКРИТИЧЕСКАЯ ОШИБКА:");
+  puts("\nFATAL ERROR:");
   va_start(ap,s);
   vprintf(s,ap);
   va_end(ap);
@@ -55,12 +53,11 @@ void ERR_quit(void) {
 
   V_done();
   if(!(p=malloc(4000)))
-    puts("Спасибо за то, что вы играли в Операцию \"Смятка\"!");
+    puts("Thanks for playing Doom2D!");
   else {
     F_loadres(F_getresid("ENDOOM"),p,0,4000);
     memcpy((void*)0xB8000,p,4000);free(p);gotoxy(1,24);
   }
   close_all();
-  CFG_save();
   exit(0);
 }

@@ -27,6 +27,6 @@ del /f /q *.obj
 %AS% sb.asm
 %WL% %LIB% -+sb
 
-%AS% sb16.asm
-%WL% %LIB% -+sb16
+%AS% sbnodma.asm
+%WL% %LIB% -+sbnodma
 

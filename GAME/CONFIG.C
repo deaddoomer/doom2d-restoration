@@ -15,7 +15,6 @@
 #include "player.h"
 
 extern byte _warp,fastdraw,nomon;
-extern int mem_chk_sz;
 
 enum{NONE,BYTE,WORD,DWORD,STRING,SW_ON,SW_OFF,FILES};
 
@@ -28,8 +27,6 @@ typedef struct{
 byte cheat=0;
 
 byte shot_vga=0;
-
-char cd_path[128]="";
 
 static cfg_t cfg[]={
   {"file",NULL,NULL,FILES,0},
@@ -44,14 +41,11 @@ static cfg_t cfg[]={
   {NULL,"sound_irq",&snd_irq,WORD,0},
   {"sndvol","sound_volume",&snd_vol,WORD,0},
   {"musvol","music_volume",&mus_vol,WORD,0},
-  {"interp","sound_interp",&s_interp,SW_ON,0},
-  {"nointerp",NULL,&s_interp,SW_OFF,0},
   {NULL,"sky",&w_horiz,SW_ON,0},
   {"fast","fast_draw",&fastdraw,SW_ON,0},
-  {"mon",NULL,&nomon,SW_OFF,0},
+  {"mon",NULL,&nomon,SW_ON,0},
   {"gamma","gamma",&gamma,DWORD,0},
   {"warp",NULL,&_warp,BYTE,0},
-  {"memchk","mem_check",&mem_chk_sz,DWORD,0},
   {NULL,"pl1_left", &pl1.kl,BYTE,0},
   {NULL,"pl1_right",&pl1.kr,BYTE,0},
   {NULL,"pl1_up",   &pl1.ku,BYTE,0},
@@ -71,11 +65,10 @@ static cfg_t cfg[]={
   {NULL,"pl2_prev", &pl2.kwl,BYTE,0},
   {NULL,"pl2_use",  &pl2.kp,BYTE,0},
   {"config",NULL,cfg_file,STRING,0},
-  {NULL,"cd_path",cd_path,STRING,0},
   {NULL,NULL,NONE,0}
 };
 
-char cfg_file[128]="DEFAULT.CFG";
+char cfg_file[128]="DOOM2D.CFG";
 
 static char buf[256];
 
@@ -84,7 +77,7 @@ void CFG_args(void) {
   dword n;
   char *s;
 
-  logo("CFG_args: проверка командной строки\n");
+  logo("CFG_args: checking arguments\n");
   for(s=strtok(getcmd(buf)," \r\n\t");s;s=strtok(NULL," \r\n\t")) {
 next:
     if(*s=='/' || *s=='-') ++s;
@@ -125,7 +118,7 @@ next:
 #endif
 	  }break;
 	default:
-	  ERR_failinit("!!! Неизвестный тип в cfg !!!");
+	  ERR_failinit("BUG: unknown type in cfg!");
 	  }
 	  cfg[j].o=1;break;
     }
@@ -138,7 +131,7 @@ void CFG_load(void) {
   char s[128];
   char *p1,*p2;
 
-  logo("CFG_load: загрузка конфигурации из %s\n",cfg_file);
+  logo("CFG_load: loading config from %s\n",cfg_file);
   if((h=open(cfg_file,O_RDONLY|O_BINARY))==-1) {
     perror("Cannot open file");return;
   }
@@ -174,39 +167,10 @@ void CFG_load(void) {
 	case FILES:
 	  break;
 	default:
-	  ERR_failinit("!!! Неизвестный тип в cfg !!!");
+	  ERR_failinit("BUG: unknown type in cfg!");
 	  }
 	  break;
     }
   }
   close(h);
-}
-
-void CFG_save(void) {
-  char s[140],str[140];
-  char *p;
-  FILE *h,*oh;
-
-  remove("CONFIG.ZZZ");
-  if(rename(cfg_file,"CONFIG.ZZZ")) return;
-  if(!(h=fopen("CONFIG.ZZZ","rt")))
-    {rename("CONFIG.ZZZ",cfg_file);return;}
-  if(!(oh=fopen(cfg_file,"wt")))
-    {fclose(h);rename("CONFIG.ZZZ",cfg_file);return;}
-  for(;;) {
-    if(!fgets(s,128,h)) break;
-    strcpy(str,s);
-    if(!(p=strtok(str,"\r\n\t =;"))) {fprintf(oh,"%s",s);continue;}
-    if(stricmp(p,"sound_volume")==0)
-      sprintf(s,"sound_volume=%d\n",snd_vol);
-    else if(stricmp(p,"music_volume")==0)
-      sprintf(s,"music_volume=%d\n",mus_vol);
-    else if(stricmp(p,"gamma")==0)
-      sprintf(s,"gamma=%d\n",gamma);
-    else if(stricmp(p,"sound_interp")==0)
-      sprintf(s,"sound_interp=%s\n",s_interp?"on":"off");
-    fprintf(oh,"%s",s);
-  }
-  fclose(oh);fclose(h);
-  remove("CONFIG.ZZZ");
 }

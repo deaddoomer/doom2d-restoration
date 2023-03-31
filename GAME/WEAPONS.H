@@ -23,4 +23,3 @@ void WP_bfgshot(int,int,int,int,int);
 void WP_bfghit(int,int,int);
 void WP_shotgun(int,int,int,int,int);
 void WP_dshotgun(int,int,int,int,int);
-void WP_ognemet(int x,int y,int xd,int yd,int xv,int yv,int o);

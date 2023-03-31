@@ -78,6 +78,8 @@ void T_done(void);
 // громкость звука и музыки (0-128)
 extern short snd_vol,mus_vol;
 
+extern char s_interp;
+
 // порт, DMA, IRQ
 extern unsigned short snd_port,snd_dma,snd_irq;
 

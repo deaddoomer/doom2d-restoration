@@ -17,7 +17,7 @@ int9sel dw ?
 
 codeseg
 
-proc K_init uses ebx ds es
+proc K_init uses ebx ds
 	cmp [drv_on],0
 	jne @@x
 	cli
@@ -104,11 +104,6 @@ proc K_setkeyproc near @@p:dword
 	mov eax,[@@p]
 	mov [key_proc],eax
 	sti
-	ret
-endp
-
-proc K_getkeyproc
-	mov eax,[key_proc]
 	ret
 endp
 

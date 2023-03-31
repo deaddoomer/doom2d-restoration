@@ -18,8 +18,6 @@ extrn V_remap_rect:proc
 
 udataseg
 
-extrn bright:byte,mixmap:byte,flametab:byte
-
 extrn fld:byte,bmap:byte,fld_need_remap:byte,clrmap:byte
 extrn walp:dword,walf:dword
 extrn w_o:dword,w_x:dword,w_y:dword
@@ -388,28 +386,6 @@ public dpmi_memavl
 	mov ax,500h
 	int 31h
 	mov eax,[dpmi_mem_info]
-	ret
-endp
-
-proc smoke_sprf uses ebx
-public smoke_sprf
-	movzx ebx,[byte edi]
-	add al,[bright+ebx]
-	add al,060h
-	xor al,0Fh
-	mov bh,al
-	mov al,[mixmap+ebx]
-	stosb
-	ret
-endp
-
-proc flame_sprf uses ebx
-public flame_sprf
-	movzx ebx,[byte edi]
-	add al,[bright+ebx]
-	mov bl,al
-	mov al,[flametab+ebx]
-	stosb
 	ret
 endp
 

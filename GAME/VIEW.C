@@ -7,7 +7,6 @@
 #include "error.h"
 #include "view.h"
 #include "dots.h"
-#include "smoke.h"
 #include "weapons.h"
 #include "items.h"
 #include "switch.h"
@@ -26,12 +25,25 @@
 
 extern map_block_t blk;
 
-extern byte clrmap[256*12];
-void V_remap_rect(int,int,int,int,byte *);
-
 byte w_horiz=ON;
 static void *horiz=NULL;
+
+#ifdef USE_LAYOUT_HACK
+extern int w_o,w_x,w_y;
+int sky_type=1; // not extern
+extern void *walp[256];
+extern dword walf[256];
+extern int walh[256];
+extern byte walswp[256];
+extern byte walani[256];
+extern int anih[ANIT][5];
+byte anic[ANIT]; // not extern
+extern byte fldb[FLDH][FLDW];
+extern byte fldf[FLDH][FLDW];
+extern byte fld[FLDH][FLDW];
+#else
 int w_o,w_x,w_y,sky_type=1;
+int w_o,w_x,w_y;
 void *walp[256];
 dword walf[256];
 int walh[256];
@@ -42,9 +54,8 @@ byte anic[ANIT];
 byte fldb[FLDH][FLDW];
 byte fldf[FLDH][FLDW];
 byte fld[FLDH][FLDW];
+#endif
 
-extern int lt_time,lt_type,lt_side,lt_ypos;
-extern void *ltn[2][2];
 
 static void getname(int n,char *s) {
   if(walh[n]==-1) {memset(s,0,8);return;}
@@ -115,10 +126,6 @@ void W_draw(void) {
   if(w_horiz) {
     V_pic(127-(word)(w_x-WD/2)*56U/(word)(MAXX-WD/2),
 	  w_o+123-(word)(w_y-HT/2)*28U/(word)(MAXY-HT/2),horiz);
-    if(sky_type==2) if(lt_time<0) {
-      if(!lt_side) V_spr(0,w_o+lt_ypos,ltn[lt_type][(lt_time<-5)?0:1]);
-      else V_spr2(WD-1,w_o+lt_ypos,ltn[lt_type][(lt_time<-5)?0:1]);
-    }
   }else V_clr(0,WD,w_o+1,HT,0x97);
 /*  x=w_x-WD/2;y=w_y-HT/2;
   sx=x/CELW;xo=-(x%CELW)+1;
@@ -133,18 +140,14 @@ void W_draw(void) {
       M_unlock(walh[c]);
     }
 */
-  DOT_draw();
   IT_draw();
   PL_draw(&pl1);
   if(_2pl) PL_draw(&pl2);
   MN_draw();
   WP_draw();
-  SMK_draw();
   FX_draw();
+  DOT_draw();
   Z_drawfld((byte *)fldf);
-  if(sky_type==2)
-    if(lt_time==-4 || lt_time==-2)
-      V_remap_rect(0,WD,w_o+1,HT,clrmap+256*11);
 }
 
 void W_init(void) {
@@ -163,7 +166,6 @@ void W_init(void) {
   }
   memset(anic,0,sizeof(anic));
   DOT_init();
-  SMK_init();
   FX_init();
   WP_init();
   IT_init();
@@ -208,7 +210,6 @@ int W_load(int h) {
 		walp[i]=M_lock(walh[i]=F_getresid(w.n));
 		if(w.n[0]=='S' && w.n[1]=='W' && w.n[4]=='_') walswp[i]=0;
 		walf[i]=(w.t)?1:0;if(w.t) walh[i]|=0x8000;
-		if(memicmp(w.n,"VTRAP01",8)==0) walf[i]|=2;
 		walani[i]=getani(w.n);
 	  }
 	  for(j=i,i=1;i<256;++i) if(walswp[i]==0) {
@@ -230,9 +231,7 @@ int W_load(int h) {
 	unp: switch(blk.st) {
 	    case 0: read(h,p,FLDW*FLDH);break;
 	    case 1:
-	      if(!(buf=malloc(blk.sz)))
-	        ERR_fatal("Не хватает памяти");
-	      read(h,buf,blk.sz);
+	      read(h,buf=malloc(blk.sz),blk.sz);
 	      unpack(buf,blk.sz,p);free(buf);break;
 	    default: return 0;
 	  }return 1;

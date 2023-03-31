@@ -475,10 +475,10 @@ public VP_set
 	out dx,al
 	delay
 	inc dx
-	movzx ecx,[word @@n]
-	mov eax,ecx
-	add ecx,ecx
-	add ecx,eax
+	mov al,[byte @@n]
+	mov ah,3
+	mul ah
+	movzx ecx,ax
 	mov esi,[@@p]
 @@1:	lodsb
 	out dx,al

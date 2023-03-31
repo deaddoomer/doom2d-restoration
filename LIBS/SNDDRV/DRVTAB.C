@@ -7,8 +7,7 @@ void __covox_drv(void);
 void __pc1_drv(void);
 void __pc8_drv(void);
 void __sb_drv(void);
-void __sb16_drv(void);
-//void __sbnodma_drv(void);
+void __sbnodma_drv(void);
 
 void *snd_drv_tab[7+1]={
   __none_drv,
@@ -17,7 +16,6 @@ void *snd_drv_tab[7+1]={
   __pc1_drv,
   __pc8_drv,
   __sb_drv,
-//  __sbnodma_drv,
-  __sb16_drv,
+  __sbnodma_drv,
   NULL
 };

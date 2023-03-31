@@ -7,13 +7,8 @@
 #include "view.h"
 #include "bmap.h"
 #include "dots.h"
-#include "smoke.h"
 #include "weapons.h"
 #include "misc.h"
-
-extern int hit_xv,hit_yv;
-
-void bfg_fly(int x,int y,int own);
 
 enum{NONE=0,ROCKET,PLASMA,APLASMA,BALL1,BALL2,BALL7,BFGBALL,BFGHIT,
      MANF,REVF,FIRE};
@@ -130,11 +125,6 @@ void WP_act(void) {
   static obj_t o;
 
   for(i=0;i<MAXWPN;++i) if(wp[i].t) {
-	if(wp[i].t==ROCKET || wp[i].t==REVF)
-	  SMK_gas(wp[i].o.x+Z_sign(wp[i].o.xv)*2,
-	    wp[i].o.y-wp[i].o.h/2,3,3,
-	    wp[i].o.xv+wp[i].o.vx,wp[i].o.yv+wp[i].o.vy,64
-	  );
 	--wp[i].o.yv;st=Z_moveobj(&wp[i].o);
 	if(st&Z_FALLOUT) {wp[i].t=0;continue;}
 	if(st&Z_HITWATER) switch(wp[i].t) {
@@ -157,7 +147,6 @@ void WP_act(void) {
 		else if(Z_hit(&wp[i].o,10,wp[i].own,HIT_SOME)) {
 		  wp[i].s=2;wp[i].o.xv=wp[i].o.yv=0;Z_sound(snd[4],128);
 		  Z_explode(wp[i].o.x,wp[i].o.y-wp[i].o.h/2,30,wp[i].own);break;}
-		bfg_fly(wp[i].o.x,wp[i].o.y-wp[i].o.h/2,wp[i].own);
 		break;
 	  case PLASMA:
 	  case APLASMA:
@@ -195,7 +184,6 @@ void WP_act(void) {
 		else if(Z_hit(&wp[i].o,100,wp[i].own,HIT_BFG)) {
 		  Z_bfg9000(wp[i].o.x,wp[i].o.y,wp[i].own);
 		  wp[i].s=2;wp[i].o.xv=wp[i].o.yv=0;Z_sound(snd[8],128);break;}
-		bfg_fly(wp[i].o.x,wp[i].o.y-wp[i].o.h/2,wp[i].own);
 		wp[i].s^=1;break;
 	  case BFGHIT:
 		if(++wp[i].s>=8) wp[i].t=0;
@@ -264,8 +252,6 @@ void WP_gun(int x,int y,int xd,int yd,int o,int v) {
   else sy=0;
   if(!xd && !yd) return;
   if((xd=abs(xd)) > (yd=abs(yd))) d=xd; else d=yd;
-  hit_xv=xd*10/d*sx;
-  hit_yv=yd*10/d*sy;
   xe=ye=0;
   lx=x;ly=y;
   for(;;) {
@@ -451,10 +437,6 @@ void WP_bfghit(int x,int y,int o) {
 void WP_pistol(int x,int y,int xd,int yd,int o) {
   Z_sound(snd[0],96);
   WP_gun(x,y,xd,yd,o,1);
-  if(g_dm) {
-    WP_gun(x,y+1,xd,yd+1,o,1);
-    WP_gun(x,y-1,xd,yd-1,o,1);
-  }
 }
 
 void WP_mgun(int x,int y,int xd,int yd,int o) {
@@ -481,11 +463,4 @@ void WP_dshotgun(int x,int y,int xd,int yd,int o) {
     j=random(10*2+1)-10;
     WP_gun(x,y+j,xd,yd+j,o,(i%3)?0:1);
   }
-}
-
-void WP_ognemet(int x,int y,int xd,int yd,int xv,int yv,int o) {
-  int m;
-
-  m=abs(xd-x);if(!m) m=abs(yd-y);
-  SMK_flame(x,y,xv,yv,2,2,(xd-x)*3000/m,(yd-y)*3000/m,1,o);
 }

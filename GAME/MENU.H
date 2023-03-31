@@ -8,8 +8,8 @@ typedef struct{
   byte *t;
 }menu_t;
 
-void GMV_say(char *);
-void GMV_stop(void);
+//void GMV_say(char *);
+//void GMV_stop(void);
 
 void GM_init(void);
 int GM_act(void);
