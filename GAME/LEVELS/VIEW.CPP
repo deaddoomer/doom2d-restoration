@@ -151,8 +151,8 @@ extern "C" void W_draw(void) {
   if(scry==0) {scry=1;if(!(--scrh)) return;}
   if(scry+scrh>HT+1) scrh=HT+1-scry;
   if(!scrw || !scrh) return;
-  V_pic(127-(word)(w_x-WD/2)*56U/(word)(MAXX-WD/2),
-	w_o+123-(word)(w_y-HT/2)*28U/(word)(MAXY-HT/2),(vgaimg*)horiz);
+  V_pic(-(w_x-WD/2)*56/(MAXX-WD/2),
+	w_o-64-(w_y-HT/2)*56/(MAXY-HT/2),(vgaimg*)horiz);
   if(w_drawb) Z_drawfld((byte *)fldb);
   if(w_drawth) TH_draw();
   if(w_drawf) Z_drawfld((byte *)fldf);
