@@ -74,7 +74,7 @@ void edit(void);
 int main() {
   textmode();gotoxy(1,2);
   randomize();
-  F_addwad("CMRTKA.WAD");
+  F_addwad("DOOM2D.WAD");
   CFG_args();
   F_startup();
   CFG_load();
