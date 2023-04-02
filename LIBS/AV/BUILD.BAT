@@ -1,4 +1,4 @@
-@SET CC=wcc386 -zp1 -3s -s -zq -j -i=..
+@SET CC=wcc386 -zp1 -5s -s -olrte -zq -j -i=..
 @SET AS=tasm /ml/z/q/t/m5
 @SET WL=wlib -q -b
 @SET LIB=..\dos\av.lib
