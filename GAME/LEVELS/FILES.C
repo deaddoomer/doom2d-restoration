@@ -14,6 +14,7 @@
 #include "view.h"
 #include "misc.h"
 #include <gui.h>
+#include <tab.h>
 #include "..\map.h"
 
 int d_start,d_end,m_start,m_end,s_start,s_end,w_start,w_end,wad_num;
@@ -333,7 +334,7 @@ char **F_make_dmm_list(void) {
 	  p[j++]=strdup(s);
 	}
   }p[j]=NULL;
-  qsort(p,j,4,strlistcmp);
+  qusort(p,j,4,strlistcmp);
   return p;
 }
 
@@ -371,7 +372,7 @@ char **F_make_map_list(char *fn) {
       p[i++]=strdup(s);
     }
   }p[i]=NULL;
-  qsort(p,i,4,strlistcmp);
+  qusort(p,i,4,strlistcmp);
   close(h);
   return p;
 }
@@ -391,7 +392,7 @@ char **F_make_file_list(char *dir,char **mask) {
 	  sprintf(f_dir,"<%s>",ff->d_name);
 	  p[i++]=strdup(f_dir);
 	}
-  qsort(p,f=i,4,strlistcmp);
+  qusort(p,f=i,4,strlistcmp);
   for(;*mask;++mask) {
 	if(f_path[strlen(strcpy(f_path,dir))-1]!='\\') strcat(f_path,"\\");
 	strcat(f_path,*mask);
@@ -399,6 +400,6 @@ char **F_make_file_list(char *dir,char **mask) {
 	  p[i++]=strdup(ff->d_name);
   }
   p[i]=NULL;
-  qsort(p+f,i-f,4,strlistcmp);
+  qusort(p+f,i-f,4,strlistcmp);
   return p;
 }
