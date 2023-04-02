@@ -1,3 +1,7 @@
+@CD   ALE
+@CALL CLEAN.BAT
+@CD   ..
+
 @CD   AV
 @CALL CLEAN.BAT
 @CD   ..
