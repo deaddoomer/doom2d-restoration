@@ -1,3 +1,7 @@
+@CD   ALE
+@CALL BUILD.BAT
+@CD   ..
+
 @CD   AV
 @CALL BUILD.BAT
 @CD   ..
