@@ -1,21 +1,3 @@
-@REM
-@REM Doom2D 1.40
-@REM
-@REM To build you need:
-@REM - Watcom C/C++ 11.0 (Release version without patches)
-@REM - Turbo Assembler from Borland C++ 3.1
-@REM - WSTUB.EXE grom Watcom C/C++ 10.0 (Release version without patches)
-@REM   (put wstub.exe into directory with sources)
-@REM
-@REM Do not forget to correctly setup environment variables:
-@REM - %PATH%    (tasm & watcom)
-@REM - %INCLUDE% (watcom)
-@REM - %WATCOM%  (watcom)
-@REM - %EDPATH%  (watcom)
-@REM
-@REM Sources are encoded using IBM866 (CP866)
-@REM 
-
 @SET AS=tasm /ml/z/q/t/m5
 @SET CC=wcc386 -w0 -zq -d1 -s -olrte -5s -j -zp1 -i=..\libs
 @SET PP=wpp386 -w0 -zq -d1 -s -omilert -5s -j -zp1 -i=..\libs
