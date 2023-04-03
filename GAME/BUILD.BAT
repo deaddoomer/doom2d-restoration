@@ -1,20 +1,3 @@
-@REM
-@REM Doom2D 1.30
-@REM
-@REM To build byte-to-byte you need:
-@REM - Watcom C/C++ 10.0 (Release version without patches)
-@REM - Turbo Assembler from Borland C++ 3.1
-@REM - PMODE/W v1.16 (put pmode.lnk & pmodew.exe into directory with sources)
-@REM
-@REM Do not forget to correctly setup environment variables:
-@REM - %PATH%    (tasm & watcom)
-@REM - %INCLUDE% (watcom)
-@REM - %WATCOM%  (watcom)
-@REM - %EDPATH%  (watcom)
-@REM
-@REM Sources are encoded using IBM866 (CP866)
-@REM 
-
 @SET AS=tasm /ml/z/q/t/m5
 @SET CC=wcc386 -zq -w3 -d1 -s -olrt -3s -j -zp1 -i=..\libs
 @SET LD=wlink @pmodew.lnk SYSTEM pmode OP stack=16K LIBP ..\libs\dos
