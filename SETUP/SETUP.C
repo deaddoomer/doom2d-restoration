@@ -148,7 +148,7 @@ void save_cfg(void) {
     fprintf(oh,"gamma=1\n");
     fprintf(oh,"sound_volume=128\n");
     fprintf(oh,"music_volume=128\n");
-    fprintf(oh,"sound_interp=off\n");
+    fprintf(oh,"sound_interp=on\n");
   }else while(fgets(str,500,h)) {
     strcpy(s,str);
     if(!(p=strtok(s," \r\n\t="))) goto copy;
@@ -185,9 +185,9 @@ void load_back(void) {
   int n,o;
   struct{int o,l;char n[8];}w;
 
-  if(!(h=fopen("CMRTKA.WAD","rb"))) {
+  if(!(h=fopen("DOOM2D.WAD","rb"))) {
     V_done();K_done();T_done();
-    puts("File CMRTKA.WAD not found");exit(1);
+    puts("File DOOM2D.WAD not found");exit(1);
   }
   fseek(h,4,SEEK_SET);fread(&n,4,1,h);fread(&o,4,1,h);
   fseek(h,o,SEEK_SET);
@@ -397,13 +397,13 @@ void setmnu(int m) {
   mnu=m;
 }
 
-void menu_kp(short k) {
+void menu_kp(short k, short pressed) {
   short *p;
   static unsigned short ftab[10]={
     5000,6000,7000,8000,9000,10000,11000,16000,22000,44000
   };
 
-  switch(k) {
+  if(pressed) switch(k) {
     case 1:
       switch(mnu) {
         case MAIN: need_exit=1;break;
@@ -480,8 +480,8 @@ void menu_kp(short k) {
 
 volatile unsigned char defk_key;
 
-void defk_kp(short k) {
-  defk_key=k;
+void defk_kp(short k, short pressed) {
+  if(pressed) defk_key=k;
 }
 
 int main(int ac,char *av[]) {
@@ -528,7 +528,8 @@ int main(int ac,char *av[]) {
       if(swmnu==TESTSND) {
         f=sfreq;sfreq=11025;T_done();S_init();
         if(snd1 && snd_card) S_play(snd1);
-        while(S_issound());
+        timer=0;
+        while(S_issound() && !keys[1]);
         S_done();T_init();sfreq=f;swmnu=SNDYN;cur[SNDYN]=1;
       }else swmnu=0;
     }
