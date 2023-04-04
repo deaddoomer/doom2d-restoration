@@ -112,10 +112,10 @@ proc K_setkeyproc near @@p:dword
 	ret
 endp
 
-proc K_getkeyproc
-	mov eax,[key_proc]
-	ret
-endp
+;proc K_getkeyproc
+;	mov eax,[key_proc]
+;	ret
+;endp
 
 ifdef __DLL__
 publicdll key_proc,keys,K_setkeyproc,def_key_proc,K_done,K_init
