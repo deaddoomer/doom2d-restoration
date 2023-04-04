@@ -1,4 +1,4 @@
-@SET CC=wcc386 -zp1 -5s -s -zq -i=..
+@SET CC=wcc386 -zp1 -3s -s -zq -i=..
 @SET AS=tasm /ml/z/q/t/m5
 @SET WL=wlib -q -b
 @SET LIB=..\dos\osnddrv.lib

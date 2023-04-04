@@ -37,14 +37,11 @@ public sfreq
 codeseg
 
 proc getsample near
-	mov eax,8000h
+	mov al,80h
 	mov ebx,[snd_ptr]
 	or ebx,ebx
 	jz @@ok
-	mov bh,[ebx]
-	xor bl,bl
-	movsx ebx,bx
-	add eax,ebx
+	add al,[ebx]
 	inc [snd_ptr]
 	dec [snd_len]
 	jnz @@ok
@@ -63,16 +60,9 @@ proc mapdma near uses ds
 	mov ax,DGROUP
 	mov ds,ax
 	cld
-	test [snd_type],2
-	jnz @@2
 @@1:	call getsample
-	mov al,ah
 	stosb
 	loop @@1
-	ret
-@@2:	call getsample
-	stosw
-	loop @@2
 	ret
 endp
 
@@ -81,10 +71,7 @@ proc timeproc near uses eax ebx ecx edx esi edi ds es
 	mov ax,DGROUP
 	mov ds,ax
 	call getsample
-	test [snd_type],2
-	jnz @@1
-	mov al,ah
-@@1:	call [snd_tp]
+	call [snd_tp]
 	pop ebp
 	ret
 endp
@@ -93,29 +80,13 @@ proc S_play uses ebx, @@p:dword
 public S_play
 	cli
 	mov ebx,[@@p]
-	add ebx,16
+	add ebx,8
 	mov [snd_ptr],ebx
-	mov eax,[ebx-16]
+	movzx eax,[word ebx-8]
 	mov [snd_len],eax
-	mov eax,[ebx-4]
+	movzx eax,[word ebx-2]
 	mov [snd_ll],eax
-	mov eax,[ebx-8]
-	add eax,ebx
-	mov [snd_ls],eax
-	sti
-	ret
-endp
-
-proc S_playraw uses ebx, @@p:dword,@@l:dword,@@ls:dword,@@ll:dword
-public S_playraw
-	cli
-	mov ebx,[@@p]
-	mov [snd_ptr],ebx
-	mov eax,[@@l]
-	mov [snd_len],eax
-	mov eax,[@@ll]
-	mov [snd_ll],eax
-	mov eax,[@@ls]
+	movzx eax,[word ebx-4]
 	add eax,ebx
 	mov [snd_ls],eax
 	sti

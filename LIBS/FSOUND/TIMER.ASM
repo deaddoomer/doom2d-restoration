@@ -52,7 +52,7 @@ public T_set_timeproc
 	ret
 endp
 
-proc T_init uses ebx ecx esi edi es
+proc T_init uses ebx ecx esi edi
 public T_init
 	cmp [drv_on],0
 	jne @@x
@@ -150,7 +150,6 @@ endp
 
 proc TimeDriver
 	push ax ds
-	cld
 	mov ax,DGROUP
 	mov ds,ax
 	mov ax,[frq]
