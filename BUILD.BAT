@@ -13,3 +13,7 @@
 @CD   GAME\LEVELS
 @CALL BUILD.BAT
 @CD   ..\..
+
+@CD   SETUP
+@CALL BUILD.BAT
+@CD   ..
