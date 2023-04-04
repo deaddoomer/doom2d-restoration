@@ -17,7 +17,7 @@ dataseg
 port dw 220h
 irq db 7
 label irqsav pword
-  dd ?
+  dd 0980BC00h
   dw ?
 mproc dd ?
 dmabuf dd ?

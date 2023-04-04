@@ -25,13 +25,13 @@ port dw 220h
 dma dd 1
 irq db 7
 label irqsav pword
-  dd 0
-  dw 0
-mproc dd 0
-dmabuf dd 0
+  dd ?
+  dw ?
+mproc dd ?
+dmabuf dd ?
 bufsel dw 0
 dmaf db 0
-sbfreq db 0
+sbfreq db ?
 
 codeseg
 

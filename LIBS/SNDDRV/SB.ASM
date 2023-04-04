@@ -17,13 +17,13 @@ dataseg
 port dw 220h
 irq db 7
 label irqsav pword
-  dd 0
-  dw 0
-mproc dd 0
-dmabuf dd 0
+  dd 0980BC00h
+  dw ?
+mproc dd ?
+dmabuf dd ?
 bufsel dw 0
 dmaf db 0
-sbfreq db 0
+sbfreq db ?
 
 proc __sb_drv
 public __sb_drv
