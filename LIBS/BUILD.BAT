@@ -21,3 +21,11 @@
 @CD   GUI
 @CALL BUILD.BAT
 @CD   ..
+
+@CD   FSOUND
+@CALL BUILD.BAT
+@CD   ..
+
+@CD   OSNDDRV
+@CALL BUILD.BAT
+@CD   ..

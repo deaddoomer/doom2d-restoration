@@ -22,6 +22,14 @@
 @CALL CLEAN.BAT
 @CD   ..
 
+@CD   FSOUND
+@CALL CLEAN.BAT
+@CD   ..
+
+@CD   OSNDDRV
+@CALL CLEAN.BAT
+@CD   ..
+
 @CD   DOS
 @CALL CLEAN.BAT
 @CD   ..
