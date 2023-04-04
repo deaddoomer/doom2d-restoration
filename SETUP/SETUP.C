@@ -29,13 +29,13 @@ vgaimg *back=NULL;
 snd *snd1,*snd2;
 
 unsigned char plk[2][9]={
-  {75,77,72,80,0x9D,0xB8,73,71,54},
+  {75,77,72,76,0x9D,0xB8,73,71,54},
   {31,33,18,32,16,30,19,17,15}
 };
 
 char newscr[64008];
 
-char cfile[128]="DEFAULT.CFG";
+char cfile[128]="Doom2D.cfg";
 
 int snd_card=0;
 
@@ -139,16 +139,14 @@ void save_cfg(void) {
   char str[505],s[505],*p,*p2;
   cfg_t *c;
 
-  remove("CONFIG.ZZZ");
-  rename(cfile,"CONFIG.ZZZ");
-  h=fopen("CONFIG.ZZZ","rt");
+  rename(cfile,"$CONFIG$.$$$");
+  h=fopen("$CONFIG$.$$$","rt");
   if(!(oh=fopen(cfile,"wt"))) return;
   if(!h) {
-    fprintf(oh,";Файл конфигурации\n\n");
+    fprintf(oh,";Файл конфигурации Doom'а 2D\n\n");
     fprintf(oh,"gamma=1\n");
     fprintf(oh,"sound_volume=128\n");
     fprintf(oh,"music_volume=128\n");
-    fprintf(oh,"sound_interp=off\n");
   }else while(fgets(str,500,h)) {
     strcpy(s,str);
     if(!(p=strtok(s," \r\n\t="))) goto copy;
@@ -176,8 +174,7 @@ void save_cfg(void) {
   }
   if(h) fclose(h);
   fclose(oh);
-  remove("CONFIG.ZZZ");
-  puts("\nКонфигурация сохранена.");
+  remove("$CONFIG$.$$$");
 }
 
 void load_back(void) {
@@ -185,9 +182,9 @@ void load_back(void) {
   int n,o;
   struct{int o,l;char n[8];}w;
 
-  if(!(h=fopen("CMRTKA.WAD","rb"))) {
+  if(!(h=fopen("doom2d.wad","rb"))) {
     V_done();K_done();T_done();
-    puts("File CMRTKA.WAD not found");exit(1);
+    puts("File Doom2D.wad not found");exit(1);
   }
   fseek(h,4,SEEK_SET);fread(&n,4,1,h);fread(&o,4,1,h);
   fseek(h,o,SEEK_SET);
@@ -199,24 +196,14 @@ void load_back(void) {
       fread(back,64008,1,h);
       fseek(h,o,SEEK_SET);
     }else if(memicmp(w.n,"DSTEST1",8)==0) {
-      if(!(snd1=malloc(w.l+sizeof(*snd1)))) break;
+      if(!(snd1=malloc(w.l))) break;
       fseek(h,w.o,SEEK_SET);
-      snd1->len=snd1->rate=snd1->lstart=snd1->llen=0;
-      fread(&snd1->len,2,1,h);
-      fread(&snd1->rate,2,1,h);
-      fread(&snd1->lstart,2,1,h);
-      fread(&snd1->llen,2,1,h);
-      fread(snd1+1,w.l,1,h);
+      fread(snd1,w.l,1,h);
       fseek(h,o,SEEK_SET);
     }else if(memicmp(w.n,"DSTSTEND",8)==0) {
-      if(!(snd2=malloc(w.l+sizeof(*snd2)))) break;
+      if(!(snd2=malloc(w.l))) break;
       fseek(h,w.o,SEEK_SET);
-      snd2->len=snd2->rate=snd2->lstart=snd2->llen=0;
-      fread(&snd2->len,2,1,h);
-      fread(&snd2->rate,2,1,h);
-      fread(&snd2->lstart,2,1,h);
-      fread(&snd2->llen,2,1,h);
-      fread(snd2+1,w.l,1,h);
+      fread(snd2,w.l,1,h);
       fseek(h,o,SEEK_SET);
     }
   }
@@ -535,6 +522,6 @@ int main(int ac,char *av[]) {
   }
   V_done();K_done();T_done();
   save_cfg();
-//  puts("А теперь, подумайте хорошенько!");
+  puts("А теперь, поdoomайте хорошенько!");
   return 0;
 }
