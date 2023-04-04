@@ -26,7 +26,7 @@ enum{
 
 // заголовок инструмента (DMI)
 typedef struct{
-  unsigned long  len,	 // длина в байтах
+  unsigned short len,	 // длина в байтах
                  rate,	 // частота в Герцах
                  lstart, // начало повтора в байтах от начала данных
                  llen;	 // длина повтора в байтах
@@ -48,9 +48,6 @@ void S_done(void);
 
 // проиграть звук s
 void S_play(snd *s);
-
-// проиграть звук s длины l, повторяя c ls длиной ll
-void S_playraw(char *s,int l,int ls,int ll);
 
 // остановить звук
 void S_stop(void);

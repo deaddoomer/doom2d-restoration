@@ -27,14 +27,9 @@ snd *load_dmi(char *fn) {
 
   if((h=open(fn,O_RDONLY|O_BINARY))==-1)
     {error(EZ_LOADSND,ET_STD,errno,fn,NULL);return NULL;}
-  if(!(p=malloc((l=filelength(h))+8)))
+  if(!(p=malloc((l=filelength(h)))))
     {error(EZ_LOADSND,ET_STD,ENOMEM,fn,NULL);return NULL;}
-  p->len=p->rate=p->lstart=p->llen=0;
-  read(h,((int*)p),2);
-  read(h,((int*)p)+1,2);
-  read(h,((int*)p)+2,2);
-  read(h,((int*)p)+3,2);
-  read(h,p+1,l-8);
+  read(h,p,l);
   close(h);
   return p;
 }
@@ -47,7 +42,7 @@ snd *load_snd(char *fn,unsigned r,unsigned ls,unsigned ll) {
 
   if((h=open(fn,O_RDONLY|O_BINARY))==-1)
     {error(EZ_LOADSND,ET_STD,errno,fn,NULL);return NULL;}
-  if(!(p=malloc((l=filelength(h))+16)))
+  if(!(p=malloc((l=filelength(h))+8)))
     {error(EZ_LOADSND,ET_STD,ENOMEM,fn,NULL);return NULL;}
   read(h,p+1,l);
   close(h);
