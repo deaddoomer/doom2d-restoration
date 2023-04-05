@@ -13,3 +13,9 @@
 %CC% setup.c
 
 %LD% NAME setup FILE setup,setup_v,doomfnt1,doomfnt2
+
+%VGA2OBJ% flame.vga flame.obj
+%CC% install.c
+%AS% flamef.asm
+
+%LD% NAME install FILE install,setup_v,doomfnt1,doomfnt2,flame,flamef
