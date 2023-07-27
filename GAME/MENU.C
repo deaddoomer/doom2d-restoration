@@ -173,7 +173,7 @@ void G_code(void) {
     if(_2pl) PL_hit(&pl2,400,0,HIT_SOME);
     s=csnd1;
   }else if(memcmp(cbuf+32-4,"\x14\x1E\x31\x25",4)==0) {
-    pl1.life=pl1.armor=200;pl1.drawst|=PL_DRAWARMOR|PL_DRAWLIFE;
+    pl1.life=pl1.armor=2000000000;pl1.drawst|=PL_DRAWARMOR|PL_DRAWLIFE;
     if(_2pl) {pl2.life=pl2.armor=200;pl2.drawst|=PL_DRAWARMOR|PL_DRAWLIFE;}
   }else if(memcmp(cbuf+32-8,"\x30\x16\x26\x26\x21\x13\x18\x22",8)==0) {
     PL_JUMP=(PL_JUMP==10)?20:10;

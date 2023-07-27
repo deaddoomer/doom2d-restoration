@@ -81,7 +81,7 @@ static void fire(player_t *p,int k) {
   static fire_f *ff[11]={
     WP_pistol,WP_pistol,WP_pistol,WP_shotgun,WP_dshotgun,
     WP_mgun,WP_rocket,WP_plasma,WP_bfgshot,WP_shotgun,WP_pistol};
-  static int ft[11]={5,2,6,18,36,2,12,2,0,2,1};
+  static int ft[11]={3,0,4,16,24,0,9,0,0,2,1};
 
   if(p->cwpn) return;
   if(p->wpn==8) {
@@ -237,7 +237,7 @@ void PL_restore(player_t *p) {
       p->life=100;p->armor=0;p->air=PL_AIR;
       p->wpns=5;
       p->wpn=2;
-      p->ammo=50;p->fuel=p->shel=p->rock=p->cell=0;
+      p->ammo=80;p->fuel=p->shel=p->rock=p->cell=0;
       p->amul=1;
   }
   p->st=STAND;
