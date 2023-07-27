@@ -82,9 +82,9 @@ void logo(const char *s,...) {
   x=wherex();y=wherey();
   gotoxy(1,1);putcn(' ',0x4F,80);
 #ifdef DEMO
-  gotoxy(31,1);cputstr("Doom2D V1.40 *demo*");
+  gotoxy(31,1);cputstr("Doom2D V1.41b *demo*");
 #else
-  gotoxy(31,1);cputstr("Doom2D версия 1.40");
+  gotoxy(31,1);cputstr("Doom2D версия 1.41b");
 #endif
   gotoxy(x,y);
 }

@@ -1,4 +1,5 @@
 This branch contains restored sources of Doom2D v1.40
+Plus changes with balance patch by 666 (aka Doom2D v1.41b)
 Based on original sources of Doom2D v1.35 published by Prikol Software
 
 How to build:
